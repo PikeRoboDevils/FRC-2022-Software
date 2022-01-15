@@ -98,7 +98,7 @@ wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 spotless {
-    enforceCheck = false
+    //enforceCheck = false
     java {
         target fileTree('.') {
             include '**/*.java'
@@ -106,7 +106,7 @@ spotless {
         }
         licenseHeader '/* (C) $YEAR Pike RoboDevils, FRC Team 1018 */'
         toggleOffOn()
-        googleJavaFormat()
+        palantirJavaFormat()
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
@@ -124,7 +124,7 @@ spotless {
     format 'xml', {
         target fileTree('.') {
             include '**/*.xml'
-            exclude '**/build/**', '**/build-*/**'
+            exclude '**/build/**', '**/build-*/**', '**/.idea/**', '**/.run/**'
         }
         eclipseWtp('xml')
         trimTrailingWhitespace()
