@@ -3,6 +3,8 @@ package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods corresponding to
@@ -11,12 +13,22 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
+
+    ControlBoard board = ControlBoard.getInstance();
+    Drivetrain drivetrain = Drivetrain.getInstance();
+
     /**
      * This method is run when the robot is first started up and should be used for any initialization
      * code.
      */
     @Override
-    public void robotInit() {}
+    public void robotInit() {
+        drivetrain.setDefaultCommand(new RunCommand(
+                () -> {
+                    drivetrain.driveOpenLoop(board.getThrottle(), board.getTurn(), board.getQuickTurn());
+                },
+                drivetrain));
+    }
 
     @Override
     public void robotPeriodic() {

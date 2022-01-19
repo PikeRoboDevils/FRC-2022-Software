@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Set;
 import org.pikerobodevils.lib.DefaultCANSparkMax;
@@ -61,6 +62,12 @@ public class Drivetrain extends SubsystemBase {
     public void setLeftAndRightVoltage(double leftVoltage, double rightVoltage) {
         leftLeader.setVoltage(leftVoltage);
         rightLeader.setVoltage(rightVoltage);
+    }
+
+    public void driveOpenLoop(double throttle, double turn, boolean quickTurn) {
+        SmartDashboard.putBoolean("quickturn", quickTurn);
+        DifferentialDrive.WheelSpeeds speeds = DifferentialDrive.curvatureDriveIK(throttle, turn, quickTurn);
+        setLeftAndRightVoltage(speeds.left * 12, speeds.right * 12);
     }
 
     private static void configureController(CANSparkMax controller) {
