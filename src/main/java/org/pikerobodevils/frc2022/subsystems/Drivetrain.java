@@ -58,6 +58,16 @@ public class Drivetrain extends SubsystemBase {
         rightEncoder = new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
     }
 
+    public void arcadeDrive(double speed, double rotation) {
+        DifferentialDrive.WheelSpeeds speeds = DifferentialDrive.arcadeDriveIK(speed, rotation, false);
+        driveOpenLoop(speeds.left, speeds.right);
+    }
+
+    public void driveOpenLoop(double left, double right) {
+        leftLeader.set(left);
+        rightLeader.set(right);
+    }
+
     public void setLeftAndRightVoltage(double leftVoltage, double rightVoltage) {
         leftLeader.setVoltage(leftVoltage);
         rightLeader.setVoltage(rightVoltage);
