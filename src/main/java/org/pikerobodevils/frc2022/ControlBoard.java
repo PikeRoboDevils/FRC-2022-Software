@@ -13,7 +13,9 @@ public class ControlBoard {
     }
 
     public double getSpeed() {
-        return left.getY();
+        double speed = left.getY();
+        if (speed == 0) return 0;
+        return left.getY() * -1;
     }
 
     public double getRotation() {

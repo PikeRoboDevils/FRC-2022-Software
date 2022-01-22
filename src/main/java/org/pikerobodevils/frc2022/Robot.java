@@ -2,6 +2,7 @@
 package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
@@ -23,11 +24,9 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+
         drivetrain.setDefaultCommand(new RunCommand(
-                () -> {
-                    drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation());
-                },
-                drivetrain));
+                () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain));
     }
 
     @Override
@@ -59,5 +58,7 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+        LiveWindow.updateValues();
+    }
 }
