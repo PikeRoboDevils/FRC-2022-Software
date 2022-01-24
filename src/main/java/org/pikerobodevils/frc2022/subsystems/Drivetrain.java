@@ -25,7 +25,7 @@ public class Drivetrain extends SubsystemBase {
 
     private final CANSparkMax leftLeader, leftFollowerOne, leftFollowerTwo;
     private final CANSparkMax rightLeader, rightFollowerOne, rightFollowerTwo;
-    private final Set<CANSparkMax> leftMotors, rightMotors;
+    private final Set<CANSparkMax> leftMotors, rightMotors, followers;
     private final Encoder leftEncoder, rightEncoder;
 
     private final AHRS navX;
@@ -74,13 +74,16 @@ public class Drivetrain extends SubsystemBase {
 
         leftMotors = Set.of(leftLeader, leftFollowerOne, leftFollowerTwo);
         rightMotors = Set.of(rightLeader, rightFollowerOne, rightFollowerTwo);
+        followers = Set.of(leftFollowerOne, leftFollowerTwo, rightFollowerOne, rightFollowerTwo);
+
+        configCANFrames();
 
         leftEncoder = new Encoder(LEFT_ENCODER_A, LEFT_ENCODER_B, false, CounterBase.EncodingType.k4X);
         leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
         rightEncoder = new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
-        navX = new AHRS(I2C.Port.kMXP);
 
+        navX = new AHRS(I2C.Port.kMXP);
         navX.reset();
 
         odometry = new DifferentialDriveOdometry(getGyroAngle());
@@ -105,6 +108,20 @@ public class Drivetrain extends SubsystemBase {
 
     public Rotation2d getGyroAngle() {
         return Rotation2d.fromDegrees(-navX.getYaw());
+    }
+
+    private void configCANFrames() {
+        leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 200);
+        leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
+
+        rightLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 200);
+        rightLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
+
+        followers.forEach(follower -> {
+            follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 500);
+            follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 500);
+            follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
+        });
     }
 
     @Override
