@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.HashSet;
 import java.util.Set;
 import org.pikerobodevils.lib.DefaultCANSparkMax;
 
@@ -25,7 +26,7 @@ public class Drivetrain extends SubsystemBase {
 
     private final CANSparkMax leftLeader, leftFollowerOne, leftFollowerTwo;
     private final CANSparkMax rightLeader, rightFollowerOne, rightFollowerTwo;
-    private final Set<CANSparkMax> leftMotors, rightMotors, followers;
+    private final Set<CANSparkMax> leftControllers, rightControllers, followers, all;
     private final Encoder leftEncoder, rightEncoder;
 
     private final AHRS navX;
@@ -37,7 +38,7 @@ public class Drivetrain extends SubsystemBase {
 
     private Pose2d pose = new Pose2d();
 
-    private Field2d field = new Field2d();
+    private final Field2d field = new Field2d();
 
     /**
      * Creates a new instance of this Drivetrain. This constructor
@@ -72,9 +73,12 @@ public class Drivetrain extends SubsystemBase {
         rightFollowerTwo.follow(rightLeader);
         configureController(rightFollowerTwo);
 
-        leftMotors = Set.of(leftLeader, leftFollowerOne, leftFollowerTwo);
-        rightMotors = Set.of(rightLeader, rightFollowerOne, rightFollowerTwo);
+        leftControllers = Set.of(leftLeader, leftFollowerOne, leftFollowerTwo);
+        rightControllers = Set.of(rightLeader, rightFollowerOne, rightFollowerTwo);
         followers = Set.of(leftFollowerOne, leftFollowerTwo, rightFollowerOne, rightFollowerTwo);
+        all = new HashSet<>();
+        all.addAll(leftControllers);
+        all.addAll(rightControllers);
 
         configCANFrames();
 
@@ -110,6 +114,10 @@ public class Drivetrain extends SubsystemBase {
         return Rotation2d.fromDegrees(-navX.getYaw());
     }
 
+    public Pose2d getPose() {
+        return pose;
+    }
+
     private void configCANFrames() {
         leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 200);
         leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
@@ -122,6 +130,17 @@ public class Drivetrain extends SubsystemBase {
             follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 500);
             follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
         });
+    }
+
+    private void checkForResetAndConfig() {
+        boolean hasReset = false;
+        for (CANSparkMax controller : all) {
+            hasReset = controller.getFault(CANSparkMax.FaultID.kHasReset);
+            if (hasReset) break;
+        }
+        if (hasReset) {
+            configCANFrames();
+        }
     }
 
     @Override
@@ -137,6 +156,8 @@ public class Drivetrain extends SubsystemBase {
         SmartDashboard.putNumber("Rotation", pose.getRotation().getDegrees());
 
         field.setRobotPose(pose);
+
+        checkForResetAndConfig();
     }
 
     private static void configureController(CANSparkMax controller) {

@@ -15,6 +15,10 @@ import org.pikerobodevils.frc2022.subsystems.Drivetrain;
  */
 public class Robot extends TimedRobot {
 
+    public Robot() {
+        super(0.1);
+    }
+
     Drivetrain drivetrain = Drivetrain.getInstance();
     ControlBoard controlBoard = ControlBoard.getInstance();
 
