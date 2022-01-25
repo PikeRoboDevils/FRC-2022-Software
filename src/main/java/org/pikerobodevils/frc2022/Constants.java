@@ -28,6 +28,11 @@ public class Constants {
         public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(TRACK_WIDTH_INCHES);
     }
 
+    public static class ArmConstants {
+        public static final int ARM_LEADER_ID = 7;
+        public static final int ARM_FOLLOWER_ID = 8;
+    }
+
     private Constants() {
         throw new UnsupportedOperationException("Constant utility class, should not be instantiated!");
     }
