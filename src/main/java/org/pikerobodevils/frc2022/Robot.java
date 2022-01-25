@@ -28,7 +28,6 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-
         drivetrain.setDefaultCommand(new RunCommand(
                 () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain));
     }

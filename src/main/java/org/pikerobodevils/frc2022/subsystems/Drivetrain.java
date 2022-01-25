@@ -3,7 +3,6 @@ package org.pikerobodevils.frc2022.subsystems;
 
 import static org.pikerobodevils.frc2022.Constants.DrivetrainConstants.*;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -90,7 +89,7 @@ public class Drivetrain extends SubsystemBase {
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 
         navX = new AHRS(I2C.Port.kMXP);
-        while(navX.isCalibrating()) {
+        while (navX.isCalibrating()) {
             Timer.delay(0.5);
         }
         resetGyro();
