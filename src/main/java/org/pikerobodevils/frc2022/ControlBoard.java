@@ -5,23 +5,21 @@ import edu.wpi.first.wpilibj.Joystick;
 
 public class ControlBoard {
 
-    private Joystick leftStick, rightStick;
+    private Joystick left, right;
 
     private ControlBoard() {
-        leftStick = new Joystick(0);
-        rightStick = new Joystick(1);
+        left = new Joystick(0);
+        right = new Joystick(1);
     }
 
-    public double getThrottle() {
-        return leftStick.getY();
+    public double getSpeed() {
+        double speed = left.getY();
+        if (speed == 0) return 0;
+        return left.getY() * -1;
     }
 
-    public double getTurn() {
-        return leftStick.getX();
-    }
-
-    public boolean getQuickTurn() {
-        return leftStick.getRawButton(1);
+    public double getRotation() {
+        return right.getX();
     }
 
     private static final ControlBoard INSTANCE = new ControlBoard();
