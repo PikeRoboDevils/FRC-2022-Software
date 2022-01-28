@@ -2,14 +2,17 @@
 package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj2.command.button.Button;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class ControlBoard {
 
-    private Joystick left, right;
+    private Joystick left, right, buttons;
 
     private ControlBoard() {
         left = new Joystick(0);
         right = new Joystick(1);
+        buttons = new Joystick(2);
     }
 
     public double getSpeed() {
@@ -20,6 +23,10 @@ public class ControlBoard {
 
     public double getRotation() {
         return right.getX();
+    }
+
+    public Button getIntakeInButton() {
+        return new JoystickButton(buttons, 1);
     }
 
     private static final ControlBoard INSTANCE = new ControlBoard();

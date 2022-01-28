@@ -21,6 +21,7 @@ public class Robot extends TimedRobot {
 
     Drivetrain drivetrain = Drivetrain.getInstance();
     ControlBoard controlBoard = ControlBoard.getInstance();
+    RobotContainer container = RobotContainer.getInstance();
 
     /**
      * This method is run when the robot is first started up and should be used for any initialization
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        container.configureButtonBindings();
         drivetrain.setDefaultCommand(new RunCommand(
                 () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain));
     }
