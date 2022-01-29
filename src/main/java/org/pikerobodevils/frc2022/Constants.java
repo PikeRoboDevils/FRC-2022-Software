@@ -34,6 +34,11 @@ public class Constants {
         public static final double KP_VELOCITY = 0.82217;
     }
 
+    public static class IntakeConstants {
+        public static final int LEADER_ID = 1;
+        public static final int FOLLOWER_ID = 2;
+    }
+
     private Constants() {
         throw new UnsupportedOperationException("Constant utility class, should not be instantiated!");
     }
