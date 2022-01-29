@@ -6,27 +6,35 @@ import static org.pikerobodevils.frc2022.Constants.IntakeConstants.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 
 public class Intake extends SubsystemBase {
 
     private final TalonSRX intakeLeader, intakeFollower;
 
     private Intake() {
-        intakeLeader = new TalonSRX(LEADER_ID);
-        intakeFollower = new TalonSRX(FOLLOWER_ID);
+        intakeLeader = new WPI_TalonSRX(LEADER_ID);
+        intakeFollower = new WPI_TalonSRX(FOLLOWER_ID);
 
         intakeFollower.follow(intakeLeader);
         intakeFollower.setInverted(InvertType.OpposeMaster);
-    }
 
-    public void intakeIn() {
-        setIntakeSpeed(0.5); // -1 to 1 so 50% is 0.5
+        SmartDashboard.putNumber("Intake Speed", 1);
     }
 
     public void setIntakeSpeed(double percent) {
         intakeLeader.set(ControlMode.PercentOutput, percent);
+    }
+
+    public void intakeIn() {
+        var speed = SmartDashboard.getNumber("Intake Speed", 0);
+        setIntakeSpeed(speed); // -1 to 1 so 50% is 0.5
+    }
+
+    public void disable() {
+        setIntakeSpeed(0);
     }
 
     private static final Intake INSTANCE = new Intake();
