@@ -14,7 +14,6 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -34,11 +33,6 @@ public class Drivetrain extends SubsystemBase {
     private final AHRS navX;
 
     private final DifferentialDriveOdometry odometry;
-
-    private final DifferentialDriveKinematics kinematics =
-            new DifferentialDriveKinematics(Units.inchesToMeters(TRACK_WIDTH_INCHES));
-
-    private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV, KA);
 
     private final RamseteController pathController = new RamseteController(2, 0.7);
 
@@ -145,12 +139,16 @@ public class Drivetrain extends SubsystemBase {
         return new DifferentialDriveWheelSpeeds(leftEncoder.getRate(), rightEncoder.getRate());
     }
 
+    public boolean isStopped() {
+        return leftEncoder.getStopped() && rightEncoder.getStopped() && navX.getRate() < 0.1;
+    }
+
     public SimpleMotorFeedforward getFeedforward() {
-        return feedforward;
+        return FEEDFORWARD;
     }
 
     public DifferentialDriveKinematics getKinematics() {
-        return kinematics;
+        return KINEMATICS;
     }
 
     public RamseteController getPathController() {
@@ -202,10 +200,10 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left encoder", leftEncoder.getDistance());
-        SmartDashboard.putNumber("Right encoder", rightEncoder.getDistance());
         SmartDashboard.putBoolean("calibrating", navX.isCalibrating());
         SmartDashboard.putNumber("gyro angle", getGyroAngle().getDegrees());
+
+        SmartDashboard.putNumber("Velocity", (leftEncoder.getRate() + rightEncoder.getRate()) / 2);
 
         pose = odometry.update(getGyroAngle(), leftEncoder.getDistance(), rightEncoder.getDistance());
 
