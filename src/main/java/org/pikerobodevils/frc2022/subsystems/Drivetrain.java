@@ -87,8 +87,7 @@ public class Drivetrain extends SubsystemBase {
         rightEncoder = new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 
-        navX = new AHRS(I2C.Port.kMXP);
-
+        navX = new AHRS(SPI.Port.kMXP);
         navX.enableBoardlevelYawReset(true);
         System.out.println(navX.isConnected());
         // Resetting the gyro does not work while the navX is calibrating
@@ -140,7 +139,7 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public boolean isStopped() {
-        return leftEncoder.getStopped() && rightEncoder.getStopped() && navX.getRate() < 0.1;
+        return leftEncoder.getStopped() && rightEncoder.getStopped() && navX.isRotating();
     }
 
     public SimpleMotorFeedforward getFeedforward() {
