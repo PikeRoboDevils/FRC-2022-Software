@@ -36,7 +36,7 @@ public class Trajectories {
 
     private static Pose2d leftTarmacOneBallScorePose;
 
-    private static Pose2d rightTarmacStartingPose;
+    private static Pose2d rightTarmacStartingPose = new Pose2d(6.570, 2.55, Rotation2d.fromDegrees(223.5));
 
     private static Pose2d rightTarmacExitPose;
 
@@ -48,6 +48,7 @@ public class Trajectories {
     private static Pose2d sampleTrajEnd = new Pose2d(5.1, 4.5, Rotation2d.fromDegrees(-45));
 
     public static void preInitializeTrajectories() {
+
         /*try {
             leftTarmacExit = TrajectoryGenerator.generateTrajectory(
                     leftTarmacStartingPose, List.of(), leftTarmacExitPose, defaultConfig);
@@ -65,7 +66,7 @@ public class Trajectories {
             e.printStackTrace();
         }*/
         sampleTraj = TrajectoryGenerator.generateTrajectory(
-            sampleTrajStart, sampleTrajWaypoints, sampleTrajEnd, defaultConfig);
+                sampleTrajStart, sampleTrajWaypoints, sampleTrajEnd, defaultConfig);
     }
 
     public static Trajectory getLeftTarmacExit() {
