@@ -26,7 +26,11 @@ public class ControlBoard {
     }
 
     public Button getIntakeInButton() {
-        return new JoystickButton(buttons, 1);
+        return new JoystickButton(buttons, 11);
+    }
+
+    public Button getIntakeOutButton() {
+        return new JoystickButton(buttons, 14);
     }
 
     private static final ControlBoard INSTANCE = new ControlBoard();

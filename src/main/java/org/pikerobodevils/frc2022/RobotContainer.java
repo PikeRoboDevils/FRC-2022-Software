@@ -13,6 +13,7 @@ public class RobotContainer {
 
     public void configureButtonBindings() {
         controls.getIntakeInButton().whileHeld(new StartEndCommand(intake::intakeIn, intake::disable, intake));
+        controls.getIntakeOutButton().whileHeld(new StartEndCommand(intake::intakeOut, intake::disable, intake));
     }
 
     public static RobotContainer getInstance() {

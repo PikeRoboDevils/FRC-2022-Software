@@ -14,7 +14,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -89,9 +88,10 @@ public class Drivetrain extends SubsystemBase {
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 
         navX = new AHRS(I2C.Port.kMXP);
-        while (navX.isCalibrating()) {
+        /*while (navX.isCalibrating()) {
             Timer.delay(0.5);
-        }
+            System.out.println("waiting for calibration");
+        }*/
         resetGyro();
 
         odometry = new DifferentialDriveOdometry(getGyroAngle());

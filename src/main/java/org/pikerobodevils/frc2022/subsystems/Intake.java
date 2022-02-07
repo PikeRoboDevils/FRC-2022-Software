@@ -18,10 +18,14 @@ public class Intake extends SubsystemBase {
         intakeLeader = new WPI_TalonSRX(LEADER_ID);
         intakeFollower = new WPI_TalonSRX(FOLLOWER_ID);
 
+        intakeLeader.configFactoryDefault();
+        intakeFollower.configFactoryDefault();
+
         intakeFollower.follow(intakeLeader);
         intakeFollower.setInverted(InvertType.OpposeMaster);
 
-        SmartDashboard.putNumber("Intake Speed", 1);
+        SmartDashboard.putNumber("Intake In Speed", 1);
+        SmartDashboard.putNumber("Intake Out Speed", -1);
     }
 
     public void setIntakeSpeed(double percent) {
@@ -29,8 +33,13 @@ public class Intake extends SubsystemBase {
     }
 
     public void intakeIn() {
-        var speed = SmartDashboard.getNumber("Intake Speed", 0);
+        var speed = SmartDashboard.getNumber("Intake In Speed", 0);
         setIntakeSpeed(speed); // -1 to 1 so 50% is 0.5
+    }
+
+    public void intakeOut() {
+        var speed = SmartDashboard.getNumber("Intake Out Speed", 0);
+        setIntakeSpeed(speed);
     }
 
     public void disable() {
