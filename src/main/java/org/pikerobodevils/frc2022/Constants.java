@@ -27,7 +27,7 @@ public class Constants {
 
         public static final double TRACK_WIDTH_INCHES = 21.83;
 
-        public static final double TRACK_WIDTH_METERS = Units.inchesToMeters(TRACK_WIDTH_INCHES);
+        public static final double TRACK_WIDTH_METERS = 0.574; //Units.inchesToMeters(TRACK_WIDTH_INCHES);
 
         public static final double KS = 0.2185; // Volts
         public static final double KV = 1.8027; // V*S/M
