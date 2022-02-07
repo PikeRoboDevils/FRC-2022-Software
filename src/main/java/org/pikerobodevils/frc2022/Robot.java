@@ -1,11 +1,13 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.frc2022;
 
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.*;
+import org.pikerobodevils.frc2022.commands.trajectory.EasyRamseteCommand;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
+import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods corresponding to
@@ -29,6 +31,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        Trajectories.preInitializeTrajectories();
         container.configureButtonBindings();
         drivetrain.setDefaultCommand(new RunCommand(
                 () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain));
@@ -40,13 +43,22 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+        Command ramsete, autonomous;
+        ramsete = new EasyRamseteCommand(Trajectories.getSampleTrajectory(), drivetrain);
+        autonomous = new InstantCommand(() -> drivetrain.setIdleMode(CANSparkMax.IdleMode.kBrake), drivetrain)
+                .andThen(ramsete);
+
+        autonomous.schedule();
+    }
 
     @Override
     public void autonomousPeriodic() {}
 
     @Override
-    public void teleopInit() {}
+    public void teleopInit() {
+        drivetrain.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    }
 
     @Override
     public void teleopPeriodic() {}
