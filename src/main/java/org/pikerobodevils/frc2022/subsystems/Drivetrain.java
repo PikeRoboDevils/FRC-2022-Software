@@ -86,7 +86,7 @@ public class Drivetrain extends SubsystemBase {
         leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
         rightEncoder = new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
-
+       
         navX = new AHRS(SPI.Port.kMXP);
         navX.enableBoardlevelYawReset(true);
         System.out.println(navX.isConnected());
@@ -99,6 +99,7 @@ public class Drivetrain extends SubsystemBase {
 
         resetYaw();
         System.out.println("Gyro calibrated, Yaw reset!");
+
 
         odometry = new DifferentialDriveOdometry(getGyroAngle());
 

@@ -45,6 +45,11 @@ public class Constants {
         public static final double MAX_ACCEL_MPS = 2.0;
     }
 
+    public static class IntakeConstants {
+        public static final int LEADER_ID = 1;
+        public static final int FOLLOWER_ID = 2;
+    }
+
     private Constants() {
         throw new UnsupportedOperationException("Constant utility class, should not be instantiated!");
     }
