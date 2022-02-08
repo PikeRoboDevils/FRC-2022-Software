@@ -34,6 +34,11 @@ public class Constants {
         public static final double KP_VELOCITY = 0.82217;
     }
 
+    public static class ClimberConstants{
+        public static final int CLIMBER_LEADER_ID = 7;
+        public static final int CLIMBER_FOLLOWER_ID = 8;
+    }
+
     private Constants() {
         throw new UnsupportedOperationException("Constant utility class, should not be instantiated!");
     }
