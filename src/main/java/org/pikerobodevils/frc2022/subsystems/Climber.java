@@ -5,6 +5,7 @@ import static org.pikerobodevils.frc2022.Constants.ClimberConstants.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Climber extends SubsystemBase {
@@ -21,12 +22,20 @@ public class Climber extends SubsystemBase {
         climberFollower.setInverted(true);
     }
 
+    public void setClimberSpeed(double speed) {
+        climberLeader.setVoltage(speed * RobotController.getBatteryVoltage());
+    }
+
     public void extendClimber() {
-        climberLeader.set(1);
+        setClimberSpeed(1);
     }
 
     public void retractClimber() {
-        climberLeader.set(-1);
+        setClimberSpeed(-1);
+    }
+
+    public void disable() {
+        setClimberSpeed(0);
     }
 
     private static final Climber INSTANCE = new Climber();

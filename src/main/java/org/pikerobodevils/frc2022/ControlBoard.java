@@ -33,6 +33,14 @@ public class ControlBoard {
         return new JoystickButton(buttons, 14);
     }
 
+    public Button getExtendClimberButton() {
+        return new JoystickButton(buttons, 1);
+    }
+
+    public Button getRetractClimberButton() {
+        return new JoystickButton(buttons, 2);
+    }
+
     private static final ControlBoard INSTANCE = new ControlBoard();
 
     public static ControlBoard getInstance() {
