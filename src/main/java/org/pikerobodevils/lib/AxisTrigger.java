@@ -16,7 +16,6 @@ public class AxisTrigger extends Trigger {
         this.lessThan = lessThan;
     }
 
-
     public AxisTrigger(DoubleSupplier supplier, double threshold) {
         this(supplier, threshold, false);
     }

@@ -1,10 +1,11 @@
+/* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.lib;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 public class TestAxisTrigger {
 
@@ -47,8 +48,6 @@ public class TestAxisTrigger {
 
         setAxisValue(-0.48);
         assertTrue(trigger.get());
-
-
     }
 
     public double getAxisValue() {

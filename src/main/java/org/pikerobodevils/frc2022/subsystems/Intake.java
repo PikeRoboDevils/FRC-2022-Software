@@ -4,32 +4,34 @@ package org.pikerobodevils.frc2022.subsystems;
 import static org.pikerobodevils.frc2022.Constants.IntakeConstants.*;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
 
-    private final TalonSRX intakeLeader, intakeFollower;
+    private final TalonSRX intakeMotor;
 
     private Intake() {
-        intakeLeader = new WPI_TalonSRX(LEADER_ID);
-        intakeFollower = new WPI_TalonSRX(FOLLOWER_ID);
 
-        intakeLeader.configFactoryDefault();
-        intakeFollower.configFactoryDefault();
+        TalonSRXConfiguration intakeConfig = new TalonSRXConfiguration();
+        intakeConfig.continuousCurrentLimit = 30;
 
-        intakeFollower.follow(intakeLeader);
-        intakeFollower.setInverted(InvertType.OpposeMaster);
+        intakeMotor = new WPI_TalonSRX(LEADER_ID);
+
+        intakeMotor.configAllSettings(intakeConfig);
+        intakeMotor.enableCurrentLimit(true);
+        intakeMotor.setNeutralMode(NeutralMode.Brake);
 
         SmartDashboard.putNumber("Intake In Speed", 1);
         SmartDashboard.putNumber("Intake Out Speed", -1);
     }
 
     public void setIntakeSpeed(double percent) {
-        intakeLeader.set(ControlMode.PercentOutput, percent);
+        intakeMotor.set(ControlMode.PercentOutput, percent);
     }
 
     public void intakeIn() {
