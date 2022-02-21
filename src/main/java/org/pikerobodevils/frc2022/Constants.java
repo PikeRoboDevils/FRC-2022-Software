@@ -50,6 +50,10 @@ public class Constants {
         public static final int FOLLOWER_ID = 2;
     }
 
+    public static class AutoConstants {
+        public static final double DEFAULT_ACTION_RANGE = 0.25;
+    }
+
     private Constants() {
         throw new UnsupportedOperationException("Constant utility class, should not be instantiated!");
     }
