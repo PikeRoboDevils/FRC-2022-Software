@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.commands.trajectory.EasyRamseteCommand;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.trajectory.Trajectories;
+import org.pikerobodevils.lib.Util;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods corresponding to
@@ -31,6 +32,10 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        System.out.println("Initializing Robot...");
+        System.out.println("Build debug info:");
+        Util.getManifestAttributesForClass(this).forEach((name, value) -> System.out.println(name + ": " + value));
+
         Trajectories.preInitializeTrajectories();
         container.configureButtonBindings();
         drivetrain.setDefaultCommand(new RunCommand(
