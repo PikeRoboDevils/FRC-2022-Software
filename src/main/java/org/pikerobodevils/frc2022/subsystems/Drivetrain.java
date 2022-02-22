@@ -50,7 +50,6 @@ public class Drivetrain extends SubsystemBase implements Logger.Loggable {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private Drivetrain() {
-
         leftLeader = new DefaultCANSparkMax(LEFT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
         leftFollowerOne = new DefaultCANSparkMax(LEFT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
         leftFollowerTwo = new DefaultCANSparkMax(LEFT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -108,6 +107,8 @@ public class Drivetrain extends SubsystemBase implements Logger.Loggable {
 
         SmartDashboard.putData(field);
         addDashboardData();
+
+        Logger.getInstance().addLoggable(this);
     }
 
     public void arcadeDrive(double speed, double rotation) {

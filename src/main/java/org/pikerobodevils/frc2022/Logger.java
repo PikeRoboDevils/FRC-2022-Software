@@ -4,14 +4,25 @@ package org.pikerobodevils.frc2022;
 import badlog.lib.BadLog;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Logger {
     private BadLog log = null;
 
-    private Logger() {}
+    private List<Loggable> loggables;
 
-    private void openLog() {
+    private Logger() {
+        loggables = new ArrayList<>();
+    }
+
+    public void openLog() {
         log = BadLog.init(Filesystem.getOperatingDirectory().getAbsolutePath() + getLogFileName());
+    }
+
+    public void addLoggable(Loggable... toAdd) {
+        Collections.addAll(this.loggables, toAdd);
     }
 
     private static String getLogFileName() {
@@ -47,7 +58,7 @@ public class Logger {
         return INSTANCE;
     }
 
-    public static interface Loggable {
+    public interface Loggable {
         void addLogItems(Logger logger);
     }
 }
