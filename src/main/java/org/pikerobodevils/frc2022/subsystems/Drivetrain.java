@@ -3,6 +3,7 @@ package org.pikerobodevils.frc2022.subsystems;
 
 import static org.pikerobodevils.frc2022.Constants.DrivetrainConstants.*;
 
+import badlog.lib.BadLog;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -24,9 +25,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.pikerobodevils.frc2022.Logger;
 import org.pikerobodevils.lib.DefaultCANSparkMax;
 
-public class Drivetrain extends SubsystemBase {
+public class Drivetrain extends SubsystemBase implements Logger.Loggable {
 
     private final CANSparkMax leftLeader, leftFollowerOne, leftFollowerTwo;
     private final CANSparkMax rightLeader, rightFollowerOne, rightFollowerTwo;
@@ -215,6 +218,11 @@ public class Drivetrain extends SubsystemBase {
         tab.addNumber("X", pose::getX);
         tab.addNumber("Y", pose::getY);
         tab.addNumber("Rotation", () -> pose.getRotation().getDegrees());
+    }
+
+    @Override
+    public void addLogItems(Logger logger) {
+
     }
 
     @Override
