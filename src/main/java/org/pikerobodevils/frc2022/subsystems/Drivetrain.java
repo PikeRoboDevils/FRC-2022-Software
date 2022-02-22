@@ -17,6 +17,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -104,6 +106,7 @@ public class Drivetrain extends SubsystemBase {
         odometry = new DifferentialDriveOdometry(getGyroAngle());
 
         SmartDashboard.putData(field);
+        addDashboardData();
     }
 
     public void arcadeDrive(double speed, double rotation) {
@@ -200,6 +203,18 @@ public class Drivetrain extends SubsystemBase {
         if (hasReset) {
             configCANFrames();
         }
+    }
+
+    private void addDashboardData() {
+
+        ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        tab.add(field);
+        tab.addBoolean("Gyro Calibrating", navX::isCalibrating);
+        tab.addNumber("Gyro Angle", () -> getGyroAngle().getDegrees());
+        tab.addNumber("Velocity", () -> (leftEncoder.getRate() + rightEncoder.getRate()) / 2);
+        tab.addNumber("X", pose::getX);
+        tab.addNumber("Y", pose::getY);
+        tab.addNumber("Rotation", () -> pose.getRotation().getDegrees());
     }
 
     @Override
