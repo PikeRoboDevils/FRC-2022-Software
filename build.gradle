@@ -2,8 +2,9 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2022.2.1"
+    id "edu.wpi.first.GradleRIO" version "2022.3.1"
     id "com.diffplug.spotless" version "6.2.0"
+    id "com.github.mrsarm.jshell.plugin" version "1.2.0"
 }
 
 def javaVersion = JavaVersion.VERSION_11
@@ -83,13 +84,32 @@ dependencies {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
+ext.getHash = {
+    def p1 = 'git rev-parse HEAD'.execute()
+    p1.waitFor()
+    return p1.text.trim()
+}
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
+    manifest {
+        attributes(
+                "GIT_REV": getHash(),
+                "Built-By": System.getProperty("user.name"),
+                "Build-Time-ISO-8601": new Date().format("yyyy-MM-dd'T'HH:mm:ss"),
+                "OS-Arch": System.getProperty("os.arch"),
+                "OS-Name": System.getProperty("os.name"),
+                "OS-Version": System.getProperty("os.version"),
+                "JDK-Vendor": System.getProperty("java.vendor"),
+                "JDK-Version": System.getProperty("java.version")
+                )
+    }
+
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
 }
 
 // Configure jar and deploy tasks
