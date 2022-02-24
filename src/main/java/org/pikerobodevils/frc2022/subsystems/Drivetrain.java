@@ -93,13 +93,23 @@ public class Drivetrain extends SubsystemBase {
         System.out.println(navX.isConnected());
         // Resetting the gyro does not work while the navX is calibrating
         var counter = 0;
+        var timedOut = false;
         while (navX.isCalibrating()) {
+            if (counter >= 5) {
+                timedOut = true;
+                break;
+            }
             System.out.println("Waiting on Gyro Calibration...");
             Timer.delay(0.5);
+            counter++;
         }
 
-        resetYaw();
-        System.out.println("Gyro calibrated, Yaw reset!");
+        if (!timedOut) {
+            resetYaw();
+            System.out.println("Gyro calibrated, Yaw reset!");
+        } else {
+            System.err.println("Gyro Calibration failed! Check NavX Sensor and reset sensor manually!");
+        }
 
         odometry = new DifferentialDriveOdometry(getGyroAngle());
 
