@@ -6,6 +6,9 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
+
+    public static final double PERIOD = 0.01;
+
     public static class DrivetrainConstants {
         public static final int LEFT_LEADER_ID = 1;
         public static final int LEFT_FOLLOWER_ONE_ID = 3;
@@ -56,7 +59,18 @@ public class Constants {
 
     public static class ArmConstants {
         public static final int ARM_LEADER_ID = 7;
-        public static final int ARM_FOLLOWER_ID = 8;
+        public static final int ARM_ENCODER_ABS_DIO = 4;
+        public static final int ARM_ENCODER_QUAD_A_DIO = 5;
+        public static final int ARM_ENCODER_QUAD_B_DIO = 6;
+        public static final int ARM_ENCODER_QUAD_I_DIO = 7;
+
+        public static final int ARM_TOP_LIMIT_DIO = 8;
+
+        public static final double KP = 0;
+        public static final double KI = 0;
+        public static final double KD = 0;
+        public static final double MAX_ACCEL = 0;
+        public static final double MAX_VELOCITY = 0;
     }
 
     private Constants() {

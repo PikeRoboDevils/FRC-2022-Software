@@ -19,7 +19,7 @@ import org.pikerobodevils.lib.Util;
 public class Robot extends TimedRobot {
 
     public Robot() {
-        super(0.01);
+        super(Constants.PERIOD);
     }
 
     Drivetrain drivetrain = Drivetrain.getInstance();
@@ -38,8 +38,11 @@ public class Robot extends TimedRobot {
 
         Trajectories.preInitializeTrajectories();
         container.configureButtonBindings();
-        drivetrain.setDefaultCommand(new RunCommand(
-                () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain));
+
+        var drivetrainCommand = new RunCommand(
+                () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain);
+        drivetrainCommand.setName("DrivetrainDefaultCommand");
+        drivetrain.setDefaultCommand(drivetrainCommand);
     }
 
     @Override
