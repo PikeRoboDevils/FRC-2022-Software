@@ -44,11 +44,11 @@ public class ControlBoard {
     }
 
     public Button getIntakeInButton() {
-        return new JoystickButton(buttons, 11);
+        return new Button(intakeInButton.or(intakeInAxisTrigger));
     }
 
     public Button getIntakeOutButton() {
-        return new JoystickButton(buttons, 14);
+        return new Button(intakeOutButton.or(intakeOutAxisTrigger));
     }
 
     public Button getArmUpButton() {
