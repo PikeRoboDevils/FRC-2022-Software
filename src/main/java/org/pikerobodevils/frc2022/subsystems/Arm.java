@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.frc2022.Constants;
+import org.pikerobodevils.lib.DefaultCANSparkMax;
 import org.pikerobodevils.lib.OffsetQuadEncoder;
 
 public class Arm extends SubsystemBase {
@@ -39,11 +40,11 @@ public class Arm extends SubsystemBase {
     private final ProfiledPIDController controller = new ProfiledPIDController(
             KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCEL), Constants.PERIOD);
 
+    private final ArmFeedforward feedforward = new ArmFeedforward(KS, KG, KV, KA);
+
     private boolean closedLoopEnabled = false;
 
     NetworkTable armDataTable = NetworkTableInstance.getDefault().getTable("Arm");
-
-    private final ArmFeedforward feedforward = new ArmFeedforward(KS, KG, KV, KA);
 
     /**
      * Creates a new instance of this Arm. This constructor
@@ -52,7 +53,7 @@ public class Arm extends SubsystemBase {
      */
     private Arm() {
 
-        armMotor = new CANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+        armMotor = new DefaultCANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
         armMotor.setInverted(false);
         armMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
         armMotor.setSmartCurrentLimit(80);
