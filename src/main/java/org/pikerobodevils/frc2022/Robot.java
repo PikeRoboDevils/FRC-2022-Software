@@ -4,6 +4,7 @@ package org.pikerobodevils.frc2022;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.commands.trajectory.EasyRamseteCommand;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
@@ -32,11 +33,17 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        // DriverStation.silenceJoystickConnectionWarning(true); //Uncomment when testing
+
         System.out.println("Initializing Robot...");
         System.out.println("Build debug info:");
         Util.getManifestAttributesForClass(this).forEach((name, value) -> System.out.println(name + ": " + value));
+        System.out.println("Software versions:");
+        System.out.println("WPILib: " + WPILibVersion.Version);
+        System.out.println("RevLib: " + CANSparkMax.kAPIVersion);
 
         Trajectories.preInitializeTrajectories();
+
         container.configureButtonBindings();
 
         var drivetrainCommand = new RunCommand(

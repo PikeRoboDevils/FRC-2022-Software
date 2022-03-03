@@ -5,18 +5,35 @@ import static org.pikerobodevils.frc2022.Constants.ArmConstants.*;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.RelativeEncoder;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.frc2022.Constants;
+import org.pikerobodevils.lib.OffsetQuadEncoder;
 
 public class Arm extends SubsystemBase {
+
+    // ALL SETPOINTS ARE IN REFERENCE TO THE LINKAGE
+    // The actual arm position should *only* be used for gravity ff.
+
+    private static final double armStartingAngleDegrees = 57;
+    private static final double linkageStartingAngleDegrees = 102;
+
+    private static final double armLowAngleDegrees = 0;
+    private static final double linkageLowAngleDegrees = 7;
+
+    private static final double chainReduction = 54.0 / 15.0;
+
     private final CANSparkMax armMotor;
     private final DutyCycleEncoder absoluteEncoder;
-    private final Encoder quadEncoder;
+    private final OffsetQuadEncoder quadEncoder;
+    private final RelativeEncoder neoEncoder;
     private final DigitalInput topLimit;
 
     private final ProfiledPIDController controller = new ProfiledPIDController(
@@ -25,9 +42,8 @@ public class Arm extends SubsystemBase {
     private boolean closedLoopEnabled = false;
 
     NetworkTable armDataTable = NetworkTableInstance.getDefault().getTable("Arm");
-    // With eager singleton initialization, any static variables/fields used in the
-    // constructor must appear before the "INSTANCE" variable so that they are initialized
-    // before the constructor is called when the "INSTANCE" variable initializes.
+
+    private final ArmFeedforward feedforward = new ArmFeedforward(KS, KG, KV, KA);
 
     /**
      * Creates a new instance of this Arm. This constructor
@@ -37,31 +53,46 @@ public class Arm extends SubsystemBase {
     private Arm() {
 
         armMotor = new CANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        armMotor.setInverted(true);
+        armMotor.setInverted(false);
         armMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        armMotor.setSmartCurrentLimit(30);
+        armMotor.setSmartCurrentLimit(80);
+        // TODO: tune current limit. 30a is too low. 80A is probably higher than we need but we'll see.
+
+        neoEncoder = armMotor.getEncoder();
 
         absoluteEncoder = new DutyCycleEncoder(ARM_ENCODER_ABS_DIO);
         absoluteEncoder.setDutyCycleRange(1.0 / 1025.0, 1024.0 / 1025.0);
 
-        quadEncoder = new Encoder(ARM_ENCODER_QUAD_A_DIO, ARM_ENCODER_QUAD_B_DIO, false, CounterBase.EncodingType.k4X);
-        quadEncoder.setDistancePerPulse(1 / 2048.0); // TODO: get actual dpp, should be pretty close
+        quadEncoder = new OffsetQuadEncoder(
+                ARM_ENCODER_QUAD_A_DIO, ARM_ENCODER_QUAD_B_DIO, true, CounterBase.EncodingType.k4X);
+        quadEncoder.setDistancePerPulse(360 / chainReduction / 2048); // getDistance will report LINKAGE angle
+        quadEncoder.reset();
+        quadEncoder.setDistance(linkageStartingAngleDegrees);
 
         topLimit = new DigitalInput(ARM_TOP_LIMIT_DIO);
 
-        initTelemetry();
+        setGoal(ArmPosition.SCORE);
         enableClosedLoop();
+
+        initTelemetry();
     }
 
+    /**
+     * If closed loop mode is enabled, resets the internal controller to prevent jumps and re-enables closed loop mode.
+     */
     public void enableClosedLoop() {
-        // If closed loop is currently disabled, reset the controller so the current state becomes the desired state.
+        // If closed loop is currently disabled, reset the controller so the controller can begin a profile towards the
+        // goal
         // Subsequent calls do nothing.
         if (!isClosedLoopEnabled()) {
-            controller.reset(getPosition());
+            controller.reset(getLinkagePosition());
             closedLoopEnabled = true;
         }
     }
 
+    /**
+     * If closed loop mode is enabled, disables the actuator and disables closed loop mode.
+     */
     public void disableClosedLoop() {
         // If closed loop is enabled, stop the motor to prevent stuck values. Subsequent calls won't do anything.
         if (isClosedLoopEnabled()) {
@@ -70,10 +101,20 @@ public class Arm extends SubsystemBase {
         }
     }
 
+    /**
+     * Returns true if closed loop mode is enabled
+     * @return true if closed loop is enabled, otherwise false
+     */
     public boolean isClosedLoopEnabled() {
         return closedLoopEnabled;
     }
 
+    /**
+     * Sets the constraints for the internal controller
+     * @param constraints Max velocity and acceleration for the arm
+     * @see TrapezoidProfile.Constraints
+     * @see TrapezoidProfile#TrapezoidProfile(TrapezoidProfile.Constraints, TrapezoidProfile.State)
+     */
     public void setConstraints(TrapezoidProfile.Constraints constraints) {
         controller.setConstraints(constraints);
     }
@@ -100,31 +141,84 @@ public class Arm extends SubsystemBase {
 
     public void runOpenLoop(double output) {
         disableClosedLoop();
-        setVoltage(output * 12);
+        setVoltage(output * 6);
     }
 
     public void disable() {
         setOutput(0);
     }
 
-    public double getPosition() {
+    /**
+     * Returns the estimated arm position in degrees based off the linkage position
+     * @return estimated arm position
+     * @see #linkageDegreesToArmDegrees(double)
+     */
+    public double getArmPositionDegrees() {
+        return linkageDegreesToArmDegrees(getLinkagePosition());
+    }
+
+    /**
+     * Returns the position in degrees of the first link of the arm linkage
+     * @return position of first link in degrees
+     */
+    public double getLinkagePosition() {
         return quadEncoder.getDistance();
     }
 
+    /**
+     * Returns whether the controller is at its end goal
+     * @return true if arm is at its goal, otherwise false
+     */
     public boolean atGoal() {
         return controller.atGoal();
     }
 
+    /**
+     * Converts linkage position to arm position
+     *
+     * Linear interpolation based conversion
+     * Very naive implementation, assumes linearity.
+     *
+     * @param linkageDegrees position of the linkage
+     * @return Position of the arm based on <code>linkageDegrees</code>
+     */
+    private static double linkageDegreesToArmDegrees(double linkageDegrees) {
+        // Linear interpolate between link1 degrees and arm degrees
+        // Poor assumption, but I don't know how to solve the equations for 4 bar linkages
+        var tLinkage =
+                (linkageDegrees - linkageLowAngleDegrees) / (linkageStartingAngleDegrees - linkageLowAngleDegrees);
+
+        return ((armStartingAngleDegrees - armLowAngleDegrees) * tLinkage) + armLowAngleDegrees;
+    }
+
     @Override
     public void periodic() {
-        if (isClosedLoopEnabled()) {
-            var output = controller.calculate(getPosition());
+
+        if (isClosedLoopEnabled() && RobotState.isEnabled()) {
+            var setpoint = controller.getSetpoint();
+            var ffVoltage = feedforward.calculate(
+                    Units.degreesToRadians(getArmPositionDegrees()), Units.degreesToRadians(setpoint.velocity));
+
+            // If the controller is set to the top OR  bottom AND it is at its goal, disable feedforward to prevent
+            // damage
+            if (controller.atGoal()
+                    && (controller.getGoal().position == ArmPosition.SCORE.position
+                            || controller.getGoal().position == ArmPosition.INTAKE.position)) {
+                ffVoltage = 0;
+            }
+            var output = ffVoltage + controller.calculate(getLinkagePosition());
             setVoltage(output);
+        } else if (RobotState.isDisabled()) { // If the robot is disabled constantly reset to avoid jumps
+            controller.reset(getLinkagePosition());
+            setVoltage(0);
         }
 
         updateTelemetry();
     }
 
+    /**
+     * Initializes any telemetry entries that need to be read from
+     */
     private void initTelemetry() {
         armDataTable.getEntry("kP").setDefaultDouble(KP);
         armDataTable.getEntry("kI").setDefaultDouble(KI);
@@ -134,13 +228,21 @@ public class Arm extends SubsystemBase {
         armDataTable.getEntry("MaxVelocity").setDefaultDouble(MAX_VELOCITY);
     }
 
+    /**
+     * Sends telemetry data to NetworkTables.
+     */
     private void updateTelemetry() {
-        armDataTable.getEntry("ArmPosition").setDouble(getPosition());
-        armDataTable.getEntry("AppliedOutput").setDouble(armMotor.getAppliedOutput());
+        armDataTable.getEntry("ArmPositionQuad").setDouble(getArmPositionDegrees());
+        armDataTable.getEntry("LinkagePosition").setDouble(getLinkagePosition());
+        armDataTable.getEntry("AppliedOutputVoltage").setDouble(armMotor.getAppliedOutput() * armMotor.getBusVoltage());
         armDataTable.getEntry("ArmCurrent").setDouble(armMotor.getOutputCurrent());
         armDataTable.getEntry("IsAtGoal").setBoolean(atGoal());
         armDataTable.getEntry("GoalPosition").setDouble(controller.getGoal().position);
         armDataTable.getEntry("ClosedLoopEnabled").setBoolean(isClosedLoopEnabled());
+
+        armDataTable.getEntry("ArmPositionAbs").setDouble(absoluteEncoder.get());
+        armDataTable.getEntry("ArmPositionNEO").setDouble(neoEncoder.getPosition());
+        armDataTable.getEntry("ArmGoalProfiled").setDouble(controller.getSetpoint().position);
 
         controller.setP(armDataTable.getEntry("kP").getDouble(KP));
         controller.setI(armDataTable.getEntry("kI").getDouble(KI));
@@ -153,8 +255,8 @@ public class Arm extends SubsystemBase {
     }
 
     public enum ArmPosition {
-        SCORE(1),
-        INTAKE(0);
+        SCORE(linkageStartingAngleDegrees),
+        INTAKE(linkageLowAngleDegrees);
 
         public final double position;
 

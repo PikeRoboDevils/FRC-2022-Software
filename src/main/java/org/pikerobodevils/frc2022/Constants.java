@@ -24,7 +24,7 @@ public class Constants {
         public static final int RIGHT_ENCODER_A = 2;
         public static final int RIGHT_ENCODER_B = 3;
 
-        public static final int CURRENT_LIMIT_PER_MOTOR = 30;
+        public static final int CURRENT_LIMIT_PER_MOTOR = 35;
 
         public static final double DISTANCE_PER_PULSE_METERS = Units.inchesToMeters(Math.PI * 6) / 256;
 
@@ -66,11 +66,24 @@ public class Constants {
 
         public static final int ARM_TOP_LIMIT_DIO = 8;
 
-        public static final double KP = 0;
+        public static final double KP = 0.1;
         public static final double KI = 0;
         public static final double KD = 0;
-        public static final double MAX_ACCEL = 0;
-        public static final double MAX_VELOCITY = 0;
+        public static final double MAX_ACCEL = 360;
+        public static final double MAX_VELOCITY = 360;
+
+        /**
+         * Obtained from sysid
+         */
+        public static final double KS = 0.22405;
+
+        public static final double KG = 1.2986;
+        public static final double KV = 0.019113;
+        public static final double KA = 0.0044777;
+    }
+
+    public static class ControlBoardConstants {
+        public static final boolean ARM_MANUAL_MODE_ALWAYS = false;
     }
 
     private Constants() {

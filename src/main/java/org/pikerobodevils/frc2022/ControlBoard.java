@@ -1,9 +1,12 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.frc2022;
 
+import static org.pikerobodevils.frc2022.Constants.ControlBoardConstants.*;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.pikerobodevils.lib.AxisTrigger;
 
 public class ControlBoard {
@@ -29,7 +32,8 @@ public class ControlBoard {
     private final Button armUpButton = new JoystickButton(buttons, 1);
     private final Button armDownButton = new JoystickButton(buttons, 2);
 
-    private final Button manualModeSwitch = new JoystickButton(buttons, 3);
+    private final Button manualModeSwitch =
+            new Button(new JoystickButton(buttons, 3).or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS)));
 
     private ControlBoard() {}
 
@@ -60,7 +64,7 @@ public class ControlBoard {
     }
 
     public double getArmManualOutput() {
-        return operatorJoystick.getY();
+        return -operatorJoystick.getY();
     }
 
     public Button getManualModeSwitch() {
