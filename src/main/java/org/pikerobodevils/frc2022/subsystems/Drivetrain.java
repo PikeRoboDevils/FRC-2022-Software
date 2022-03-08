@@ -6,32 +6,64 @@ import static org.pikerobodevils.frc2022.Constants.DrivetrainConstants.*;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.HashSet;
 import java.util.Set;
+import org.pikerobodevils.frc2022.Constants;
 import org.pikerobodevils.lib.DefaultCANSparkMax;
 
 public class Drivetrain extends SubsystemBase {
 
-    private final CANSparkMax leftLeader, leftFollowerOne, leftFollowerTwo;
-    private final CANSparkMax rightLeader, rightFollowerOne, rightFollowerTwo;
-    private final Set<CANSparkMax> leftControllers, rightControllers, followers, all;
-    private final Encoder leftEncoder, rightEncoder;
+    private final CANSparkMax leftLeader =
+            new DefaultCANSparkMax(LEFT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax leftFollowerOne =
+            new DefaultCANSparkMax(LEFT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax leftFollowerTwo =
+            new DefaultCANSparkMax(LEFT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    private final AHRS navX;
+    private final CANSparkMax rightLeader =
+            new DefaultCANSparkMax(RIGHT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax rightFollowerOne =
+            new DefaultCANSparkMax(RIGHT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final CANSparkMax rightFollowerTwo =
+            new DefaultCANSparkMax(RIGHT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+    private final Set<CANSparkMax> leftControllers = Set.of(leftLeader, leftFollowerOne, leftFollowerTwo);
+    private final Set<CANSparkMax> rightControllers = Set.of(rightLeader, rightFollowerOne, rightFollowerTwo);
+    private final Set<CANSparkMax> followers =
+            Set.of(leftFollowerOne, leftFollowerTwo, rightFollowerOne, rightFollowerTwo);
+    private final Set<CANSparkMax> all =
+            Set.of(leftLeader, leftFollowerOne, leftFollowerTwo, rightLeader, rightFollowerOne, rightFollowerTwo);
+
+    private final Encoder leftEncoder =
+            new Encoder(LEFT_ENCODER_A, LEFT_ENCODER_B, false, CounterBase.EncodingType.k4X);
+    private final Encoder rightEncoder =
+            new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
+
+    private final AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 150);
+
+    private final PIDController leftVelocityPID = new PIDController(KP_VELOCITY, 0, 0, Constants.PERIOD);
+    private final PIDController rightVelocityPID = new PIDController(KP_VELOCITY, 0, 0, Constants.PERIOD);
+    private DifferentialDriveWheelSpeeds prevSpeeds = new DifferentialDriveWheelSpeeds(0, 0);
 
     private final DifferentialDriveOdometry odometry;
 
@@ -39,7 +71,16 @@ public class Drivetrain extends SubsystemBase {
 
     private Pose2d pose = new Pose2d();
 
-    private final Field2d field = new Field2d();
+    public final Field2d field = new Field2d();
+
+    // Sim stuff
+    private final DifferentialDrivetrainSim driveSim = new DifferentialDrivetrainSim(
+            DCMotor.getNEO(3), 7.56, 12, 60, Units.inchesToMeters(3), Units.inchesToMeters(26), null);
+    private final EncoderSim leftEncoderSim = new EncoderSim(leftEncoder);
+    private final EncoderSim rightEncoderSim = new EncoderSim(rightEncoder);
+    int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
+    SimDouble angle = new SimDouble(SimDeviceDataJNI.getSimValueHandle(dev, "Yaw"));
+    // end sim stuff
 
     /**
      * Creates a new instance of this Drivetrain. This constructor
@@ -47,14 +88,6 @@ public class Drivetrain extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private Drivetrain() {
-
-        leftLeader = new DefaultCANSparkMax(LEFT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        leftFollowerOne = new DefaultCANSparkMax(LEFT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        leftFollowerTwo = new DefaultCANSparkMax(LEFT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-
-        rightLeader = new DefaultCANSparkMax(RIGHT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        rightFollowerOne = new DefaultCANSparkMax(RIGHT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        rightFollowerTwo = new DefaultCANSparkMax(RIGHT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
         leftLeader.setInverted(false);
         configureController(leftLeader);
@@ -74,21 +107,11 @@ public class Drivetrain extends SubsystemBase {
         rightFollowerTwo.follow(rightLeader);
         configureController(rightFollowerTwo);
 
-        leftControllers = Set.of(leftLeader, leftFollowerOne, leftFollowerTwo);
-        rightControllers = Set.of(rightLeader, rightFollowerOne, rightFollowerTwo);
-        followers = Set.of(leftFollowerOne, leftFollowerTwo, rightFollowerOne, rightFollowerTwo);
-        all = new HashSet<>();
-        all.addAll(leftControllers);
-        all.addAll(rightControllers);
-
         configCANFrames();
 
-        leftEncoder = new Encoder(LEFT_ENCODER_A, LEFT_ENCODER_B, false, CounterBase.EncodingType.k4X);
         leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
-        rightEncoder = new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 
-        navX = new AHRS(SPI.Port.kMXP);
         navX.enableBoardlevelYawReset(true);
         System.out.println(navX.isConnected());
         // Resetting the gyro does not work while the navX is calibrating
@@ -112,13 +135,26 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void driveOpenLoop(double left, double right) {
-        leftLeader.set(left);
-        rightLeader.set(right);
+        leftLeader.setVoltage(left * 12);
+        rightLeader.setVoltage(right * 12);
     }
 
     public void setLeftAndRightVoltage(double leftVoltage, double rightVoltage) {
         leftLeader.setVoltage(leftVoltage);
         rightLeader.setVoltage(rightVoltage);
+    }
+
+    public void setLeftAndRightVelocity(DifferentialDriveWheelSpeeds setpoints) {
+        var measurement = getWheelSpeeds();
+
+        var leftVoltage = leftVelocityPID.calculate(measurement.leftMetersPerSecond, setpoints.leftMetersPerSecond);
+        var rightVoltage = rightVelocityPID.calculate(measurement.rightMetersPerSecond, setpoints.rightMetersPerSecond);
+
+        setLeftAndRightVoltage(leftVoltage, rightVoltage);
+    }
+
+    public void setChassisVelocity(ChassisSpeeds velocity) {
+        setLeftAndRightVelocity(KINEMATICS.toWheelSpeeds(velocity));
     }
 
     public void setIdleMode(CANSparkMax.IdleMode mode) {
@@ -161,6 +197,11 @@ public class Drivetrain extends SubsystemBase {
         rightEncoder.reset();
     }
 
+    public void resetPID() {
+        leftVelocityPID.reset();
+        rightVelocityPID.reset();
+    }
+
     public SimpleMotorFeedforward getFeedforward() {
         return FEEDFORWARD;
     }
@@ -173,21 +214,20 @@ public class Drivetrain extends SubsystemBase {
         return pathController;
     }
 
-    public void displayTrajectory(Trajectory trajectory) {
-        field.getObject("traj").setTrajectory(trajectory);
-    }
-
     private void configCANFrames() {
         leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 200);
         leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
+        leftLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3, 65535);
 
         rightLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 200);
         rightLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
+        rightLeader.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3, 65535);
 
         followers.forEach(follower -> {
             follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 500);
             follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 500);
             follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 500);
+            follower.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3, 65535);
         });
     }
 
@@ -213,6 +253,8 @@ public class Drivetrain extends SubsystemBase {
 
         SmartDashboard.putNumber("X", pose.getX());
         SmartDashboard.putNumber("Y", pose.getY());
+        SmartDashboard.putNumber("leftencoder", leftEncoder.getRaw());
+        SmartDashboard.putNumber("rightencoder", rightEncoder.getRaw());
         SmartDashboard.putNumber("Rotation", pose.getRotation().getDegrees());
 
         field.setRobotPose(pose);
@@ -220,9 +262,25 @@ public class Drivetrain extends SubsystemBase {
         checkForResetAndConfig();
     }
 
+    @Override
+    public void simulationPeriodic() {
+        driveSim.setInputs(
+                leftLeader.getAppliedOutput() * RobotController.getInputVoltage(),
+                rightLeader.getAppliedOutput() * RobotController.getInputVoltage());
+        driveSim.update(Constants.PERIOD);
+
+        leftEncoderSim.setDistance(driveSim.getLeftPositionMeters());
+        leftEncoderSim.setRate(driveSim.getLeftVelocityMetersPerSecond());
+        rightEncoderSim.setDistance(driveSim.getRightPositionMeters());
+        rightEncoderSim.setRate(driveSim.getRightVelocityMetersPerSecond());
+
+        angle.set(-driveSim.getHeading().getDegrees());
+    }
+
     private static void configureController(CANSparkMax controller) {
         controller.setSmartCurrentLimit(CURRENT_LIMIT_PER_MOTOR);
         controller.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        // controller.setOpenLoopRampRate();
         controller.burnFlash();
     }
 

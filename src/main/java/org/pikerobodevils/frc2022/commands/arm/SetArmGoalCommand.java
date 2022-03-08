@@ -22,20 +22,7 @@ public class SetArmGoalCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        System.out.println(getName());
         arm.setGoal(goalPosition);
-    }
-
-    @Override
-    public void execute() {
-        System.out.println(getName() + ": Execute" + isFinished());
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        /*if (interrupted) {
-            arm.disable();
-        }*/
     }
 
     @Override

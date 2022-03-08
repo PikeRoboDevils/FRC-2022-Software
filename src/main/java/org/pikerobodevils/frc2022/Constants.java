@@ -3,7 +3,10 @@ package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
 public class Constants {
 
@@ -24,7 +27,7 @@ public class Constants {
         public static final int RIGHT_ENCODER_A = 2;
         public static final int RIGHT_ENCODER_B = 3;
 
-        public static final int CURRENT_LIMIT_PER_MOTOR = 35;
+        public static final int CURRENT_LIMIT_PER_MOTOR = 30;
 
         public static final double DISTANCE_PER_PULSE_METERS = Units.inchesToMeters(Math.PI * 6) / 256;
 
@@ -36,7 +39,7 @@ public class Constants {
         public static final double KV = 1.8027; // V*S/M
         public static final double KA = 0.01476; // V*S/M^2
 
-        public static final double KP_VELOCITY = 0.5;
+        public static final double KP_VELOCITY = 0.7;
 
         public static final DifferentialDriveKinematics KINEMATICS =
                 new DifferentialDriveKinematics(TRACK_WIDTH_METERS);
@@ -44,8 +47,17 @@ public class Constants {
     }
 
     public static class TrajectoryConstants {
-        public static final double MAX_VELOCITY_MPS = 2.5;
-        public static final double MAX_ACCEL_MPS = 2.0;
+        public static final double MAX_VELOCITY_MPS = 1;
+        public static final double MAX_ACCEL_MPS = 1;
+        public static final double MAX_VOLTAGE = 8;
+
+        public static final TrajectoryConfig DEFAULT_CONF_FORWARD = new TrajectoryConfig(
+                        MAX_VELOCITY_MPS, MAX_ACCEL_MPS)
+                .setKinematics(DrivetrainConstants.KINEMATICS)
+                .addConstraint(new DifferentialDriveVoltageConstraint(
+                        DrivetrainConstants.FEEDFORWARD, DrivetrainConstants.KINEMATICS, MAX_VOLTAGE));
+        public static final TrajectoryConfig DEFAULT_CONF_REVERSE =
+                Trajectories.copyConfig(DEFAULT_CONF_FORWARD).setReversed(true);
     }
 
     public static class IntakeConstants {
@@ -66,10 +78,10 @@ public class Constants {
 
         public static final int ARM_TOP_LIMIT_DIO = 8;
 
-        public static final double KP = 0.1;
+        public static final double KP = 0.25;
         public static final double KI = 0;
         public static final double KD = 0;
-        public static final double MAX_ACCEL = 360;
+        public static final double MAX_ACCEL = 300;
         public static final double MAX_VELOCITY = 360;
 
         /**

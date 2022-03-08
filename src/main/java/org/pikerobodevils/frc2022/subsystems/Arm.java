@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.frc2022.Constants;
 import org.pikerobodevils.lib.DefaultCANSparkMax;
 import org.pikerobodevils.lib.OffsetQuadEncoder;
+import org.pikerobodevils.lib.OneShot;
 
 public class Arm extends SubsystemBase {
 
@@ -27,7 +28,7 @@ public class Arm extends SubsystemBase {
     private static final double linkageStartingAngleDegrees = 102;
 
     private static final double armLowAngleDegrees = 0;
-    private static final double linkageLowAngleDegrees = 7;
+    private static final double linkageLowAngleDegrees = 8;
 
     private static final double chainReduction = 54.0 / 15.0;
 
@@ -35,7 +36,9 @@ public class Arm extends SubsystemBase {
     private final DutyCycleEncoder absoluteEncoder;
     private final OffsetQuadEncoder quadEncoder;
     private final RelativeEncoder neoEncoder;
-    private final DigitalInput topLimit;
+    private final DigitalInput lowerLimit = new DigitalInput(ARM_TOP_LIMIT_DIO);
+
+    private final OneShot lowerLimitRisingEdge = new OneShot(() -> !lowerLimit.get());
 
     private final ProfiledPIDController controller = new ProfiledPIDController(
             KP, KI, KD, new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCEL), Constants.PERIOD);
@@ -67,11 +70,11 @@ public class Arm extends SubsystemBase {
         quadEncoder = new OffsetQuadEncoder(
                 ARM_ENCODER_QUAD_A_DIO, ARM_ENCODER_QUAD_B_DIO, true, CounterBase.EncodingType.k4X);
         quadEncoder.setDistancePerPulse(360 / chainReduction / 2048); // getDistance will report LINKAGE angle
+        quadEncoder.setSamplesToAverage(10);
         quadEncoder.reset();
         quadEncoder.setDistance(linkageStartingAngleDegrees);
 
-        topLimit = new DigitalInput(ARM_TOP_LIMIT_DIO);
-
+        controller.setTolerance(4);
         setGoal(ArmPosition.SCORE);
         enableClosedLoop();
 
@@ -195,10 +198,15 @@ public class Arm extends SubsystemBase {
     @Override
     public void periodic() {
 
+        // if(lowerLimitRisingEdge.get()) {
+        //    quadEncoder.setDistance(linkageLowAngleDegrees + 1);
+        // }
+
         if (isClosedLoopEnabled() && RobotState.isEnabled()) {
             var setpoint = controller.getSetpoint();
             var ffVoltage = feedforward.calculate(
-                    Units.degreesToRadians(getArmPositionDegrees()), Units.degreesToRadians(setpoint.velocity));
+                    Units.degreesToRadians(linkageDegreesToArmDegrees(setpoint.position)),
+                    Units.degreesToRadians(setpoint.velocity));
 
             // If the controller is set to the top OR  bottom AND it is at its goal, disable feedforward to prevent
             // damage
@@ -233,17 +241,16 @@ public class Arm extends SubsystemBase {
      * Sends telemetry data to NetworkTables.
      */
     private void updateTelemetry() {
-        armDataTable.getEntry("ArmPositionQuad").setDouble(getArmPositionDegrees());
-        armDataTable.getEntry("LinkagePosition").setDouble(getLinkagePosition());
+        armDataTable.getEntry("ArmPosition").setDouble(getLinkagePosition());
+        armDataTable.getEntry("ArmVelocity").setDouble(quadEncoder.getRate());
         armDataTable.getEntry("AppliedOutputVoltage").setDouble(armMotor.getAppliedOutput() * armMotor.getBusVoltage());
         armDataTable.getEntry("ArmCurrent").setDouble(armMotor.getOutputCurrent());
         armDataTable.getEntry("IsAtGoal").setBoolean(atGoal());
         armDataTable.getEntry("GoalPosition").setDouble(controller.getGoal().position);
         armDataTable.getEntry("ClosedLoopEnabled").setBoolean(isClosedLoopEnabled());
 
-        armDataTable.getEntry("ArmPositionAbs").setDouble(absoluteEncoder.get());
-        armDataTable.getEntry("ArmPositionNEO").setDouble(neoEncoder.getPosition());
-        armDataTable.getEntry("ArmGoalProfiled").setDouble(controller.getSetpoint().position);
+        armDataTable.getEntry("SetpointPosition").setDouble(controller.getSetpoint().position);
+        armDataTable.getEntry("SetpointVelocity").setDouble(controller.getSetpoint().velocity);
 
         controller.setP(armDataTable.getEntry("kP").getDouble(KP));
         controller.setI(armDataTable.getEntry("kI").getDouble(KI));

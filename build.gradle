@@ -117,6 +117,16 @@ deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
+tasks.register("copyPaths") {
+    copy {
+        from "PathWeaver"
+        into "src/main/deploy"
+        include "Paths/**"
+    }
+}
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(copyPaths)
+
+
 spotless {
     enforceCheck = false
     java {
