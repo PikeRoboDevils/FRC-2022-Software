@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
     private Intake() {
 
         TalonSRXConfiguration intakeConfig = new TalonSRXConfiguration();
-        intakeConfig.continuousCurrentLimit = 30;
+        intakeConfig.continuousCurrentLimit = 40;
 
         intakeMotor = new WPI_TalonSRX(LEADER_ID);
 

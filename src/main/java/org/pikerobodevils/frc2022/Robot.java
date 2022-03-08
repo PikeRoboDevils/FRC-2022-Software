@@ -2,12 +2,13 @@
 package org.pikerobodevils.frc2022;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
-import org.pikerobodevils.frc2022.commands.trajectory.EasyRamseteCommand;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
-import org.pikerobodevils.frc2022.trajectory.Trajectories;
 import org.pikerobodevils.lib.Util;
 
 /**
@@ -19,12 +20,14 @@ import org.pikerobodevils.lib.Util;
 public class Robot extends TimedRobot {
 
     public Robot() {
-        super(0.01);
+        super(Constants.PERIOD);
     }
 
     Drivetrain drivetrain = Drivetrain.getInstance();
     ControlBoard controlBoard = ControlBoard.getInstance();
+    DriverDashboard dashboard = DriverDashboard.getInstance();
     RobotContainer container = RobotContainer.getInstance();
+    PowerDistribution pdh = new PowerDistribution();
 
     /**
      * This method is run when the robot is first started up and should be used for any initialization
@@ -32,28 +35,37 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        setNetworkTablesFlushEnabled(true);
+        DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
+
         System.out.println("Initializing Robot...");
         System.out.println("Build debug info:");
         Util.getManifestAttributesForClass(this).forEach((name, value) -> System.out.println(name + ": " + value));
+        System.out.println("Software versions:");
+        System.out.println("WPILib: " + WPILibVersion.Version);
+        System.out.println("RevLib: " + CANSparkMax.kAPIVersion);
 
-        Trajectories.preInitializeTrajectories();
+        pdh.clearStickyFaults();
+
         container.configureButtonBindings();
-        drivetrain.setDefaultCommand(new RunCommand(
-                () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain));
+
+        var drivetrainCommand = new RunCommand(
+                () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain);
+        drivetrainCommand.setName("DrivetrainDefaultCommand");
+        drivetrain.setDefaultCommand(drivetrainCommand);
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        dashboard.updateEntries();
     }
 
     @Override
     public void autonomousInit() {
         Command ramsete, autonomous;
-        ramsete = new EasyRamseteCommand(Trajectories.getSampleTrajectory(), drivetrain);
-        autonomous = new InstantCommand(() -> drivetrain.setIdleMode(CANSparkMax.IdleMode.kBrake), drivetrain)
-                .andThen(ramsete);
 
+        autonomous = dashboard.getSelectedAutoCommand();
         autonomous.schedule();
     }
 

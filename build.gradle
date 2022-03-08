@@ -2,7 +2,7 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 
 plugins {
     id "java"
-    id "edu.wpi.first.GradleRIO" version "2022.3.1"
+    id "edu.wpi.first.GradleRIO" version "2022.4.1"
     id "com.diffplug.spotless" version "6.2.0"
     id "com.github.mrsarm.jshell.plugin" version "1.2.0"
 }
@@ -116,6 +116,16 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+tasks.register("copyPaths") {
+    copy {
+        from "PathWeaver"
+        into "src/main/deploy"
+        include "Paths/**"
+    }
+}
+deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(copyPaths)
+
 
 spotless {
     enforceCheck = false

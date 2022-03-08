@@ -3,9 +3,15 @@ package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
 public class Constants {
+
+    public static final double PERIOD = 0.01;
+
     public static class DrivetrainConstants {
         public static final int LEFT_LEADER_ID = 1;
         public static final int LEFT_FOLLOWER_ONE_ID = 3;
@@ -33,7 +39,7 @@ public class Constants {
         public static final double KV = 1.8027; // V*S/M
         public static final double KA = 0.01476; // V*S/M^2
 
-        public static final double KP_VELOCITY = 0.5;
+        public static final double KP_VELOCITY = 0.7;
 
         public static final DifferentialDriveKinematics KINEMATICS =
                 new DifferentialDriveKinematics(TRACK_WIDTH_METERS);
@@ -41,8 +47,17 @@ public class Constants {
     }
 
     public static class TrajectoryConstants {
-        public static final double MAX_VELOCITY_MPS = 2.5;
-        public static final double MAX_ACCEL_MPS = 2.0;
+        public static final double MAX_VELOCITY_MPS = 1;
+        public static final double MAX_ACCEL_MPS = 1;
+        public static final double MAX_VOLTAGE = 8;
+
+        public static final TrajectoryConfig DEFAULT_CONF_FORWARD = new TrajectoryConfig(
+                        MAX_VELOCITY_MPS, MAX_ACCEL_MPS)
+                .setKinematics(DrivetrainConstants.KINEMATICS)
+                .addConstraint(new DifferentialDriveVoltageConstraint(
+                        DrivetrainConstants.FEEDFORWARD, DrivetrainConstants.KINEMATICS, MAX_VOLTAGE));
+        public static final TrajectoryConfig DEFAULT_CONF_REVERSE =
+                Trajectories.copyConfig(DEFAULT_CONF_FORWARD).setReversed(true);
     }
 
     public static class IntakeConstants {
@@ -52,6 +67,35 @@ public class Constants {
 
     public static class AutoConstants {
         public static final double DEFAULT_ACTION_RANGE = 0.25;
+    }
+
+    public static class ArmConstants {
+        public static final int ARM_LEADER_ID = 7;
+        public static final int ARM_ENCODER_ABS_DIO = 4;
+        public static final int ARM_ENCODER_QUAD_A_DIO = 5;
+        public static final int ARM_ENCODER_QUAD_B_DIO = 6;
+        public static final int ARM_ENCODER_QUAD_I_DIO = 7;
+
+        public static final int ARM_TOP_LIMIT_DIO = 8;
+
+        public static final double KP = 0.25;
+        public static final double KI = 0;
+        public static final double KD = 0;
+        public static final double MAX_ACCEL = 300;
+        public static final double MAX_VELOCITY = 360;
+
+        /**
+         * Obtained from sysid
+         */
+        public static final double KS = 0.22405;
+
+        public static final double KG = 1.2986;
+        public static final double KV = 0.019113;
+        public static final double KA = 0.0044777;
+    }
+
+    public static class ControlBoardConstants {
+        public static final boolean ARM_MANUAL_MODE_ALWAYS = false;
     }
 
     private Constants() {
