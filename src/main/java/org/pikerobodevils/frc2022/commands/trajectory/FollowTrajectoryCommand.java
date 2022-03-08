@@ -1,6 +1,6 @@
+/* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.frc2022.commands.trajectory;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -13,21 +13,15 @@ public class FollowTrajectoryCommand extends CommandBase {
     private final Trajectory trajectory;
     private final Timer timer = new Timer();
 
-
-
     public FollowTrajectoryCommand(final Trajectory toFollow) {
         this.trajectory = toFollow;
         addRequirements(drivetrain);
     }
 
-
-
     @Override
     public void initialize() {
         timer.reset();
         drivetrain.resetPID();
-
-
     }
 
     @Override
