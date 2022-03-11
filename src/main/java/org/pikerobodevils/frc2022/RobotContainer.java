@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import org.pikerobodevils.frc2022.commands.arm.ArmOpenLoopCommand;
 import org.pikerobodevils.frc2022.commands.arm.SetArmGoalCommand;
 import org.pikerobodevils.frc2022.subsystems.Arm;
+import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.subsystems.Intake;
 
@@ -13,6 +14,7 @@ public class RobotContainer {
     private ControlBoard controls = ControlBoard.getInstance();
     private Drivetrain drivetrain = Drivetrain.getInstance();
     private Intake intake = Intake.getInstance();
+    private Climber climber = Climber.getInstance();
     private Arm arm = Arm.getInstance();
 
     public void configureButtonBindings() {
