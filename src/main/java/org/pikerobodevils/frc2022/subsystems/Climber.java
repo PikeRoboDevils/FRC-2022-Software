@@ -17,30 +17,41 @@ public class Climber extends SubsystemBase {
     private final CANSparkMax rightClimb;
     private final RelativeEncoder leftClimbEncoder, rightClimbEncoder;
 
-    private final PIDController controller = new PIDController(KP, KI, KD, Constants.PERIOD);
+    private final PIDController differentialController = new PIDController(KP, KI, KD, Constants.PERIOD);
+
+    private final double extendSpeed = 1;
+    private final double retractSpeed = -1;
+
+    private double desiredSpeed = 0;
 
     private Climber() {
 
         leftClimb = new DefaultCANSparkMax(LEFT_CLIMBER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        leftClimb.setSmartCurrentLimit(30);
         rightClimb = new DefaultCANSparkMax(RIGHT_CLIMBER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        rightClimb.setSmartCurrentLimit(30);
 
         leftClimbEncoder = leftClimb.getEncoder();
         rightClimbEncoder = rightClimb.getEncoder();
     }
 
-    public void setClimberSpeed() {}
+    public void setClimberSpeed(double speed) {
+        desiredSpeed = speed;
+    }
 
-    public void Climberup() {}
+    public void extendClimber() {
+        setClimberSpeed(extendSpeed);
+    }
 
-    public void climberDown() {}
+    public void retractClimber() {
+        setClimberSpeed(retractSpeed);
+    }
 
-    public void getDifference() {}
+    public double getDifference() {
+        return leftClimbEncoder.getPosition() - rightClimbEncoder.getPosition();
+    }
 
     @Override
     public void periodic() {
-        super.periodic();
+        var nominalSpeed = desiredSpeed;
     }
 
     private static final Climber INSTANCE = new Climber();

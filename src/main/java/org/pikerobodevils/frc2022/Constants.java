@@ -66,10 +66,8 @@ public class Constants {
     }
 
     public static class ClimberConstants {
-        public static final int RIGHT_CLIMBER_ID = 8;
-        public static final int LEFT_CLIMBER_ID = 9;
-        public static final int LEFT_CLIMB_ENCODER = 3;
-        public static final int RIGHT_CLIMB_ENCODER = 4;
+        public static final int LEFT_CLIMBER_ID = 8;
+        public static final int RIGHT_CLIMBER_ID = 9;
         public static final double KP = 0;
         public static final double KI = 0;
         public static final double KD = 0;
