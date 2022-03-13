@@ -11,7 +11,7 @@ import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 
 public class EasyRamseteCommand extends RamseteCommand {
     private final Drivetrain drivetrain;
-    private final Trajectory trajectory;
+    public final Trajectory trajectory;
 
     private final boolean resetOdometry;
 

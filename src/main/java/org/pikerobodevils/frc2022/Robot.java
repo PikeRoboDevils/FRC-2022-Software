@@ -35,7 +35,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        setNetworkTablesFlushEnabled(true);
+        // setNetworkTablesFlushEnabled(true);
         DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
         System.out.println("Initializing Robot...");

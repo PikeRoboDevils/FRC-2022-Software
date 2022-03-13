@@ -24,11 +24,11 @@ public class Arm extends SubsystemBase {
     // ALL SETPOINTS ARE IN REFERENCE TO THE LINKAGE
     // The actual arm position should *only* be used for gravity ff.
 
-    private static final double armStartingAngleDegrees = 57;
-    private static final double linkageStartingAngleDegrees = 102;
+    private static final double armStartingAngleDegrees = 32;
+    private static final double linkageStartingAngleDegrees = 104;
 
     private static final double armLowAngleDegrees = 0;
-    private static final double linkageLowAngleDegrees = 8;
+    private static final double linkageLowAngleDegrees = 5;
 
     private static final double chainReduction = 54.0 / 15.0;
 

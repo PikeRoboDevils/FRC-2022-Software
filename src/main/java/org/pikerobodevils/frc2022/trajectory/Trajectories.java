@@ -74,6 +74,16 @@ public class Trajectories {
         }
     }
 
+    public static Trajectory generateNamedQuinticTrajectory(String name, TrajectoryConfig conf) {
+        try {
+            var filepath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("Paths", name));
+            return quinticFromWaypoints(filepath, conf);
+        } catch (IOException exception) {
+            DriverStation.reportError("Failed to load auto trajectory: " + name, false);
+            return new Trajectory();
+        }
+    }
+
     public static Trajectory fromWaypoints(Path path, TrajectoryConfig config) throws IOException {
         try (BufferedReader reader = Files.newBufferedReader(path)) {
             var interiorWaypoints = new ArrayList<Translation2d>();
@@ -101,6 +111,33 @@ public class Trajectories {
         }
     }
 
+    public static Trajectory quinticFromWaypoints(Path path, TrajectoryConfig config) throws IOException {
+        try (BufferedReader reader = Files.newBufferedReader(path)) {
+            var interiorWaypoints = new ArrayList<Pose2d>();
+            Pose2d start = new Pose2d();
+            Pose2d end = new Pose2d();
+            int loop = 0;
+            String line;
+            String lastline = "";
+
+            while ((line = reader.readLine()) != null) {
+                if (loop == 0 || loop == 2) {
+                    ; // skip the header and the second line because we are logging last
+                } else if (loop == 1) {
+                    interiorWaypoints.add(createPoseWaypoint(line));
+                } else {
+                    interiorWaypoints.add(createPoseWaypoint(lastline));
+                }
+                lastline = line;
+                loop++;
+            }
+
+            interiorWaypoints.add(createPoseWaypoint(lastline));
+
+            return TrajectoryGenerator.generateTrajectory(interiorWaypoints, config);
+        }
+    }
+
     private static Pose2d createPoseWaypoint(String input) {
         String[] arrOfStr = input.split(",", 0);
         // 8.21m is the Height of the field PathWeaver and traj use different starting points
@@ -113,6 +150,6 @@ public class Trajectories {
 
     private static Translation2d createTranslationWaypoint(String input) {
         String[] arrOfStr = input.split(",", 0);
-        return new Translation2d(Double.parseDouble(arrOfStr[0]), 4.572 + Double.parseDouble(arrOfStr[1]));
+        return new Translation2d(Double.parseDouble(arrOfStr[0]), 8.21 + Double.parseDouble(arrOfStr[1]));
     }
 }
