@@ -68,9 +68,20 @@ public class Constants {
     public static class ClimberConstants {
         public static final int LEFT_CLIMBER_ID = 8;
         public static final int RIGHT_CLIMBER_ID = 9;
-        public static final double KP = 0;
-        public static final double KI = 0;
-        public static final double KD = 0;
+        public static final double KP_DIFFERENTIAL = 0.01;
+        public static final double KI_DIFFERENTIAL = 0;
+        public static final double KD_DIFFERENTIAL = 0;
+
+        //maxleft 136
+        //maxright 129
+
+
+        public static final double KP_POSITION = 0;
+        public static final double KI_POSITION = 0;
+        public static final double KD_POSITION = 0;
+        public static final double KS = 0;
+        public static final double KG = 0;
+
     }
 
     public static class AutoConstants {
