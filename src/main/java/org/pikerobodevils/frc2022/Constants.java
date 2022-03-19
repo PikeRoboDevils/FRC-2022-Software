@@ -95,6 +95,13 @@ public class Constants {
         public static final double KA = 0.0044777;
     }
 
+    public static class ClimberConstants {
+        public static final int LEFT_MOTOR_ID = 8;
+        public static final int RIGHT_MOTOR_ID = 9;
+
+        public static final double KP_HOLD = 0.5;
+    }
+
     public static class ControlBoardConstants {
         public static final boolean ARM_MANUAL_MODE_ALWAYS = false;
     }

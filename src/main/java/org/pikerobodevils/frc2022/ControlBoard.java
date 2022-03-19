@@ -27,7 +27,7 @@ public class ControlBoard {
             new AxisTrigger(operatorJoystick::getX, -axisTriggerThreshold, true);
 
     private final Button intakeInButton = new JoystickButton(buttons, 11);
-    private final Button intakeOutButton = new JoystickButton(buttons, 14);
+    private final Button intakeOutButton = new JoystickButton(buttons, 2);
 
     private final Button driverLeftTrigger = new JoystickButton(left, 1);
     private final Button driverRightTrigger = new JoystickButton(right, 1);
@@ -35,16 +35,21 @@ public class ControlBoard {
     private final Button driverLeftThumb = new JoystickButton(left, 2);
     private final Button driverRightThumb = new JoystickButton(right, 2);
 
-    private final Button armUpButton = new JoystickButton(buttons, 6);
-    private final Button armDownButton = new JoystickButton(buttons, 2);
+    private final Button armUpButton = new JoystickButton(buttons, 7);
+    private final Button armDownButton = new JoystickButton(buttons, 16);
+
+    private final Button climberUpButton = new JoystickButton(buttons, 3);
+    private final Button climberDownButton = new JoystickButton(buttons, 14);
+
+    private final Button climberOverride = new Button(new JoystickButton(buttons, 1).negate());
 
     private final Button manualModeSwitch =
-            new Button(new JoystickButton(buttons, 19).negate().or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS)));
+            new Button(new JoystickButton(buttons, 10).negate().or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS)));
 
     private ControlBoard() {}
 
     public double getSpeed() {
-        double speed = left.getY() * 0.75;
+        double speed = left.getY() * 1;
         if (speed == 0) return 0;
         return left.getY() * -1;
     }
@@ -83,6 +88,18 @@ public class ControlBoard {
 
     public Button getManualModeSwitch() {
         return manualModeSwitch;
+    }
+
+    public Button getClimberOverride() {
+        return climberOverride;
+    }
+
+    public Button getClimberUpButton() {
+        return climberUpButton;
+    }
+
+    public Button getClimberDownButton() {
+        return climberDownButton;
     }
 
     public boolean isManualMode() {
