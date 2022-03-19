@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
+import io.github.oblarg.oblog.Logger;
+import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.lib.Util;
 
@@ -24,10 +26,13 @@ public class Robot extends TimedRobot {
     }
 
     Drivetrain drivetrain = Drivetrain.getInstance();
+    Climber climber = Climber.getInstance();
     ControlBoard controlBoard = ControlBoard.getInstance();
     DriverDashboard dashboard = DriverDashboard.getInstance();
     RobotContainer container = RobotContainer.getInstance();
     PowerDistribution pdh = new PowerDistribution();
+
+    Command autoCommand = null;
 
     /**
      * This method is run when the robot is first started up and should be used for any initialization
@@ -35,7 +40,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        setNetworkTablesFlushEnabled(true);
+        // setNetworkTablesFlushEnabled(true);
         DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
         System.out.println("Initializing Robot...");
@@ -48,25 +53,21 @@ public class Robot extends TimedRobot {
         pdh.clearStickyFaults();
 
         container.configureButtonBindings();
-
-        var drivetrainCommand = new RunCommand(
-                () -> drivetrain.arcadeDrive(controlBoard.getSpeed(), controlBoard.getRotation()), drivetrain);
-        drivetrainCommand.setName("DrivetrainDefaultCommand");
-        drivetrain.setDefaultCommand(drivetrainCommand);
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         dashboard.updateEntries();
+        Logger.updateEntries();
     }
 
     @Override
     public void autonomousInit() {
         Command ramsete, autonomous;
 
-        autonomous = dashboard.getSelectedAutoCommand();
-        autonomous.schedule();
+        autoCommand = dashboard.getSelectedAutoCommand();
+        autoCommand.schedule();
     }
 
     @Override
@@ -74,6 +75,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
+        if (autoCommand != null) autoCommand.cancel();
         drivetrain.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 

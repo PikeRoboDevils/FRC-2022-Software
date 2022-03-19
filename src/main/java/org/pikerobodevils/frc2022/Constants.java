@@ -6,11 +6,12 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
 public class Constants {
 
-    public static final double PERIOD = 0.01;
+    public static final double PERIOD = RobotBase.isSimulation() ? 0.02 : 0.01;
 
     public static class DrivetrainConstants {
         public static final int LEFT_LEADER_ID = 1;
@@ -47,9 +48,9 @@ public class Constants {
     }
 
     public static class TrajectoryConstants {
-        public static final double MAX_VELOCITY_MPS = 1;
+        public static final double MAX_VELOCITY_MPS = 2;
         public static final double MAX_ACCEL_MPS = 1;
-        public static final double MAX_VOLTAGE = 8;
+        public static final double MAX_VOLTAGE = 5;
 
         public static final TrajectoryConfig DEFAULT_CONF_FORWARD = new TrajectoryConfig(
                         MAX_VELOCITY_MPS, MAX_ACCEL_MPS)
@@ -81,7 +82,7 @@ public class Constants {
         public static final double KP = 0.25;
         public static final double KI = 0;
         public static final double KD = 0;
-        public static final double MAX_ACCEL = 300;
+        public static final double MAX_ACCEL = 260;
         public static final double MAX_VELOCITY = 360;
 
         /**
@@ -92,6 +93,13 @@ public class Constants {
         public static final double KG = 1.2986;
         public static final double KV = 0.019113;
         public static final double KA = 0.0044777;
+    }
+
+    public static class ClimberConstants {
+        public static final int LEFT_MOTOR_ID = 8;
+        public static final int RIGHT_MOTOR_ID = 9;
+
+        public static final double KP_HOLD = 0.5;
     }
 
     public static class ControlBoardConstants {
