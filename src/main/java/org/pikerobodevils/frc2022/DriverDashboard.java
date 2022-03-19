@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.pikerobodevils.frc2022.commands.autonomous.LeftStartTwoBall;
+import org.pikerobodevils.frc2022.commands.autonomous.NoAutonomous;
+import org.pikerobodevils.frc2022.commands.autonomous.UniversalDriveBackAutonomous;
 import org.pikerobodevils.frc2022.commands.autonomous.UniversalOneBallDriveAuto;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 
@@ -37,8 +39,10 @@ public class DriverDashboard {
     }
 
     private void initAutoChooser() {
+        autoChooser.addOption("No Auto", new NoAutonomous());
         autoChooser.setDefaultOption("Universal One Ball then Drive", new UniversalOneBallDriveAuto());
-        autoChooser.addOption("twoball", new LeftStartTwoBall());
+        autoChooser.addOption("Universal Drive Back", new UniversalDriveBackAutonomous());
+        autoChooser.addOption("twoball pls dont use yet", new LeftStartTwoBall());
     }
 
     public Command getSelectedAutoCommand() {

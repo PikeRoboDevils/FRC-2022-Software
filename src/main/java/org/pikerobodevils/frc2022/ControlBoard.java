@@ -3,6 +3,7 @@ package org.pikerobodevils.frc2022;
 
 import static org.pikerobodevils.frc2022.Constants.ControlBoardConstants.*;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -43,8 +44,10 @@ public class ControlBoard {
 
     private final Button climberOverride = new Button(new JoystickButton(buttons, 1).negate());
 
-    private final Button manualModeSwitch =
-            new Button(new JoystickButton(buttons, 10).negate().or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS)));
+    private final Button manualModeSwitch = new Button(new JoystickButton(buttons, 10)
+            .negate()
+            .or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS))
+            .and(new Trigger(() -> !DriverStation.isAutonomous())));
 
     private ControlBoard() {}
 

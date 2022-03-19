@@ -4,7 +4,11 @@ package org.pikerobodevils.frc2022.commands.autonomous;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.pikerobodevils.frc2022.Constants;
+import org.pikerobodevils.frc2022.commands.arm.SetArmGoalCommand;
+import org.pikerobodevils.frc2022.commands.intake.IntakeInCommand;
+import org.pikerobodevils.frc2022.commands.intake.IntakeOutCommand;
 import org.pikerobodevils.frc2022.commands.trajectory.EasyRamseteCommand;
+import org.pikerobodevils.frc2022.subsystems.Arm;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
@@ -17,18 +21,10 @@ public class LeftStartTwoBall extends SequentialCommandGroup {
             Trajectories.generateNamedTrajectory("LeftBallToHub", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
 
     public LeftStartTwoBall() {
-        addCommands(new EasyRamseteCommand(startToBall, drivetrain, true));
-
+        addCommands(new SetArmGoalCommand(Arm.ArmPosition.INTAKE).withTimeout(1));
+        addCommands(new EasyRamseteCommand(startToBall, drivetrain, true).raceWith(new IntakeInCommand()));
+        addCommands(new SetArmGoalCommand(Arm.ArmPosition.SCORE).withTimeout(1));
         addCommands(new EasyRamseteCommand(leftBallToHub, drivetrain, false));
-        var endState = startToBall.getStates().get(startToBall.getStates().size() - 1);
-        /*var command = new EasyRamseteCommand(
-                AngularTrajectoryGenerator.generateAngularTrajectory(
-                        endState.poseMeters,
-                        endState.poseMeters.getRotation().rotateBy(Rotation2d.fromDegrees(180)),
-                        new TrapezoidProfile.Constraints(Units.degreesToRadians(360), Units.degreesToRadians(360)),
-                        Constants.PERIOD),
-                drivetrain,
-                true);
-        addCommands(command);*/
+        addCommands(new IntakeOutCommand().withTimeout(1));
     }
 }
