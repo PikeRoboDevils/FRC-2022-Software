@@ -2,6 +2,7 @@
 package org.pikerobodevils.frc2022;
 
 import com.revrobotics.CANSparkMax;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -40,8 +41,11 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
-        // setNetworkTablesFlushEnabled(true);
-        DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
+        setNetworkTablesFlushEnabled(true);
+
+        DataLogManager.start();
+        DriverStation.startDataLog(DataLogManager.getLog());
+        // DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
         System.out.println("Initializing Robot...");
         System.out.println("Build debug info:");
