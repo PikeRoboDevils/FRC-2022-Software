@@ -28,7 +28,7 @@ public class Constants {
         public static final int RIGHT_ENCODER_A = 2;
         public static final int RIGHT_ENCODER_B = 3;
 
-        public static final int CURRENT_LIMIT_PER_MOTOR = 30;
+        public static final int CURRENT_LIMIT_PER_MOTOR = 40;
 
         public static final double DISTANCE_PER_PULSE_METERS = Units.inchesToMeters(Math.PI * 6) / 256;
 
