@@ -32,8 +32,7 @@ public class SetArmGoalCommand extends CommandBase {
     }
 
     @Override
-    public void execute() {
-    }
+    public void execute() {}
 
     @Override
     public void end(boolean interrupted) {
@@ -42,7 +41,7 @@ public class SetArmGoalCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if(RobotBase.isReal()) {
+        if (RobotBase.isReal()) {
             return arm.atGoal();
         } else {
             return timer.hasElapsed(2);

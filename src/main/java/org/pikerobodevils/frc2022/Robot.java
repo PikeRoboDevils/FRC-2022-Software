@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         setNetworkTablesFlushEnabled(true);
 
-        if(isReal()) {
+        if (isReal()) {
             DataLogManager.start();
             DriverStation.startDataLog(DataLogManager.getLog());
         }

@@ -145,8 +145,13 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void driveOpenLoop(double left, double right) {
-        leftLeader.setVoltage(left * 12);
-        rightLeader.setVoltage(right * 12);
+        if (RobotBase.isReal()) {
+            leftLeader.set(left);
+            rightLeader.set(right);
+        } else {
+            leftLeader.setVoltage(left * 12);
+            rightLeader.setVoltage(right * 12);
+        }
     }
 
     public void setLeftAndRightVoltage(double leftVoltage, double rightVoltage) {
