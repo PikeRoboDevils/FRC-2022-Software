@@ -5,16 +5,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import org.pikerobodevils.frc2022.subsystems.Climber;
 
 public class SetSoftLimitsCommand extends InstantCommand {
-    private boolean enable;
 
     public SetSoftLimitsCommand(boolean enable) {
+        super(() -> Climber.getInstance().enableSoftLimits(enable));
+        addRequirements(Climber.getInstance());
         setName(getName() + "(" + enable + ")");
-        this.enable = enable;
     }
 
     @Override
-    public void initialize() {
-        Climber.getInstance().enableSoftLimits(enable);
-        System.out.println(this.getName());
+    public boolean runsWhenDisabled() {
+        return true;
     }
 }

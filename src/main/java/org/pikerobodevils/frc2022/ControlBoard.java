@@ -47,7 +47,7 @@ public class ControlBoard {
     private final Button manualModeSwitch = new Button(new JoystickButton(buttons, 10)
             .negate()
             .or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS))
-            .and(new Trigger(() -> !DriverStation.isAutonomous())));
+            .and(new Trigger(() -> DriverStation.isTeleopEnabled())));
 
     private ControlBoard() {}
 
@@ -58,7 +58,8 @@ public class ControlBoard {
     }
 
     public double getRotation() {
-        return right.getX();
+        var rawTurn = right.getX();
+        return Math.signum(rawTurn) * Math.pow(rawTurn * 1, 2);
     }
 
     public Button getIntakeInButton() {
