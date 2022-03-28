@@ -1,6 +1,7 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.frc2022;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -19,6 +20,8 @@ public class DriverDashboard {
 
     private ShuffleboardTab dashTab = Shuffleboard.getTab("Driver Dashboard");
 
+    private ShuffleboardTab cameraTab = Shuffleboard.getTab("Camera");
+
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     private Field2d fieldVis = new Field2d();
@@ -32,6 +35,9 @@ public class DriverDashboard {
                 .withSize(3, 2)
                 .withPosition(6, 0);
         SmartDashboard.putData(fieldVis);
+
+        var camera = CameraServer.startAutomaticCapture();
+        cameraTab.add(camera).withSize(9, 3).withPosition(0, 0).withWidget(BuiltInWidgets.kCameraStream);
     }
 
     public void updateEntries() {

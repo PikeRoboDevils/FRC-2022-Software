@@ -59,7 +59,7 @@ public class ControlBoard {
 
     public double getRotation() {
         var rawTurn = right.getX();
-        return Math.signum(rawTurn) * Math.pow(rawTurn * 1, 2);
+        return rawTurn; // Math.signum(rawTurn) * Math.pow(rawTurn * 1, 2);
     }
 
     public Button getIntakeInButton() {
