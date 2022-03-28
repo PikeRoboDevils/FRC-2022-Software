@@ -42,14 +42,18 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         setNetworkTablesFlushEnabled(true);
 
-        DataLogManager.start();
-        DriverStation.startDataLog(DataLogManager.getLog());
-        // DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
+        if (isReal()) {
+            DataLogManager.start();
+            DriverStation.startDataLog(DataLogManager.getLog());
+        }
+
+        if (isSimulation()) DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
         System.out.println("Initializing Robot...");
         System.out.println("Build debug info:");
         Util.getManifestAttributesForClass(this).forEach((name, value) -> System.out.println(name + ": " + value));
         System.out.println("Software versions:");
+        System.out.println("Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
         System.out.println("WPILib: " + WPILibVersion.Version);
         System.out.println("RevLib: " + CANSparkMax.kAPIVersion);
 
@@ -78,6 +82,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         if (autoCommand != null) autoCommand.cancel();
+
         drivetrain.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
