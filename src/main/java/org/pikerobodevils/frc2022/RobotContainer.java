@@ -57,11 +57,14 @@ public class RobotContainer {
                         .andThen(new WaitAndReserveCommand(2, climber)));
     }
 
+    private static RobotContainer INSTANCE = new RobotContainer();
+
     public static RobotContainer getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new RobotContainer();
+        }
         return INSTANCE;
     }
 
     private RobotContainer() {}
-
-    private static final RobotContainer INSTANCE = new RobotContainer();
 }

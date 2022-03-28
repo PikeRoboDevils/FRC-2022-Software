@@ -2,10 +2,7 @@
 package org.pikerobodevils.frc2022;
 
 import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
@@ -25,12 +22,12 @@ public class Robot extends TimedRobot {
         super(Constants.PERIOD);
     }
 
-    Drivetrain drivetrain = Drivetrain.getInstance();
-    Climber climber = Climber.getInstance();
-    ControlBoard controlBoard = ControlBoard.getInstance();
-    DriverDashboard dashboard = DriverDashboard.getInstance();
-    RobotContainer container = RobotContainer.getInstance();
-    PowerDistribution pdh = new PowerDistribution();
+    Drivetrain drivetrain;
+    Climber climber;
+    ControlBoard controlBoard;
+    DriverDashboard dashboard;
+    RobotContainer container;
+    PowerDistribution pdh;
 
     Command autoCommand = null;
 
@@ -44,19 +41,31 @@ public class Robot extends TimedRobot {
 
         if (isReal()) {
             DataLogManager.start();
-            DriverStation.startDataLog(DataLogManager.getLog());
+        } else {
+            DataLogManager.start(Filesystem.getOperatingDirectory()
+                    .toPath()
+                    .resolve("sim_logs")
+                    .toString());
         }
+        DriverStation.startDataLog(DataLogManager.getLog());
 
         if (isSimulation()) DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
-        System.out.println("Initializing Robot...");
-        System.out.println("Build debug info:");
-        Util.getManifestAttributesForClass(this).forEach((name, value) -> System.out.println(name + ": " + value));
-        System.out.println("Software versions:");
-        System.out.println("Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
-        System.out.println("WPILib: " + WPILibVersion.Version);
-        System.out.println("RevLib: " + CANSparkMax.kAPIVersion);
+        DataLogManager.log("Initializing Robot...");
+        DataLogManager.log("Build debug info:");
+        Util.getManifestAttributesForClass(this).forEach((name, value) -> DataLogManager.log(name + ": " + value));
+        DataLogManager.log("Software versions:");
+        DataLogManager.log("Java: " + System.getProperty("java.vendor") + " " + System.getProperty("java.version"));
+        DataLogManager.log("WPILib: " + WPILibVersion.Version);
+        DataLogManager.log("RevLib: " + CANSparkMax.kAPIVersion);
 
+        drivetrain = Drivetrain.getInstance();
+        climber = Climber.getInstance();
+        controlBoard = ControlBoard.getInstance();
+        dashboard = DriverDashboard.getInstance();
+        container = RobotContainer.getInstance();
+
+        pdh = new PowerDistribution();
         pdh.clearStickyFaults();
 
         container.configureButtonBindings();

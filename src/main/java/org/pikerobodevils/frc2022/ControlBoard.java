@@ -110,9 +110,12 @@ public class ControlBoard {
         return manualModeSwitch.get();
     }
 
-    private static final ControlBoard INSTANCE = new ControlBoard();
+    private static ControlBoard INSTANCE;
 
     public static ControlBoard getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new ControlBoard();
+        }
         return INSTANCE;
     }
 }

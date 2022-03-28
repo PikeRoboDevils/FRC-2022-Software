@@ -113,7 +113,6 @@ public class Drivetrain extends SubsystemBase {
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 
         navX.enableBoardlevelYawReset(true);
-        System.out.println(navX.isConnected());
         // Resetting the gyro does not work while the navX is calibrating
         var counter = 0;
         var timedOut = false;
@@ -122,16 +121,17 @@ public class Drivetrain extends SubsystemBase {
                 timedOut = true;
                 break;
             }
-            System.out.println("Waiting on Gyro Calibration...");
+            DataLogManager.log("Waiting on Gyro Calibration...");
             Timer.delay(0.5);
             counter++;
         }
 
         if (!timedOut) {
             resetYaw();
-            System.out.println("Gyro calibrated, Yaw reset!");
+            DataLogManager.log("Gyro calibrated, Yaw reset!");
         } else {
-            System.err.println("Gyro Calibration failed! Check NavX Sensor and reset sensor manually!");
+            DataLogManager.log("Gyro Calibration failed! Check NavX Sensor and reset sensor manually!");
+            DriverStation.reportError("Gyro Calibration failed! Check NavX Sensor and reset sensor manually!", false);
         }
 
         odometry = new DifferentialDriveOdometry(getGyroAngle());
@@ -304,7 +304,7 @@ public class Drivetrain extends SubsystemBase {
      * the {@link #getInstance()} method to get the single instance (rather
      * than trying to construct an instance of this class.)
      */
-    private static final Drivetrain INSTANCE = new Drivetrain();
+    private static Drivetrain INSTANCE;
 
     /**
      * Returns the Singleton instance of this Drivetrain. This static method
@@ -313,6 +313,9 @@ public class Drivetrain extends SubsystemBase {
      */
     // @SuppressWarnings("WeakerAccess")
     public static Drivetrain getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Drivetrain();
+        }
         return INSTANCE;
     }
 }

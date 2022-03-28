@@ -16,6 +16,7 @@ import edu.wpi.first.math.trajectory.*;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.math.trajectory.constraint.TrajectoryConstraint;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import java.io.BufferedReader;
@@ -106,7 +107,7 @@ public class Trajectories {
             }
 
             end = createPoseWaypoint(lastline);
-
+            DataLogManager.log("Generating trajectory from file: " + path.getFileName());
             return TrajectoryGenerator.generateTrajectory(start, interiorWaypoints, end, config);
         }
     }

@@ -59,9 +59,12 @@ public class DriverDashboard {
         fieldVis.getObject("traj").setTrajectory(trajectory);
     }
 
-    private static DriverDashboard INSTANCE = new DriverDashboard();
+    private static DriverDashboard INSTANCE;
 
     public static DriverDashboard getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new DriverDashboard();
+        }
         return INSTANCE;
     }
 }

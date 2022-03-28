@@ -114,9 +114,12 @@ public class Climber extends SubsystemBase {
         updateTelemetry();
     }
 
-    private static final Climber INSTANCE = new Climber();
+    private static Climber INSTANCE;
 
     public static Climber getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Climber();
+        }
         return INSTANCE;
     }
 }
