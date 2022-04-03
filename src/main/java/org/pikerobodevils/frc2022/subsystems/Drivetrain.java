@@ -29,23 +29,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Set;
 import org.pikerobodevils.frc2022.Constants;
-import org.pikerobodevils.lib.DefaultCANSparkMax;
+import org.pikerobodevils.lib.DevilCANSparkMax;
 
 public class Drivetrain extends SubsystemBase {
 
     private final CANSparkMax leftLeader =
-            new DefaultCANSparkMax(LEFT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+            new DevilCANSparkMax(LEFT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final CANSparkMax leftFollowerOne =
-            new DefaultCANSparkMax(LEFT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+            new DevilCANSparkMax(LEFT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final CANSparkMax leftFollowerTwo =
-            new DefaultCANSparkMax(LEFT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+            new DevilCANSparkMax(LEFT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     private final CANSparkMax rightLeader =
-            new DefaultCANSparkMax(RIGHT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+            new DevilCANSparkMax(RIGHT_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final CANSparkMax rightFollowerOne =
-            new DefaultCANSparkMax(RIGHT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+            new DevilCANSparkMax(RIGHT_FOLLOWER_ONE_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
     private final CANSparkMax rightFollowerTwo =
-            new DefaultCANSparkMax(RIGHT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+            new DevilCANSparkMax(RIGHT_FOLLOWER_TWO_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
     private final Set<CANSparkMax> leftControllers = Set.of(leftLeader, leftFollowerOne, leftFollowerTwo);
     private final Set<CANSparkMax> rightControllers = Set.of(rightLeader, rightFollowerOne, rightFollowerTwo);

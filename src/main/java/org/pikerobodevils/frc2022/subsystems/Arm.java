@@ -15,7 +15,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.frc2022.Constants;
-import org.pikerobodevils.lib.DefaultCANSparkMax;
+import org.pikerobodevils.lib.DevilCANSparkMax;
 import org.pikerobodevils.lib.OffsetQuadEncoder;
 import org.pikerobodevils.lib.OneShot;
 
@@ -56,7 +56,7 @@ public class Arm extends SubsystemBase {
      */
     private Arm() {
 
-        armMotor = new DefaultCANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+        armMotor = new DevilCANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
         armMotor.setInverted(false);
         armMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
         armMotor.setSmartCurrentLimit(80);

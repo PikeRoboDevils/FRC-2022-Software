@@ -2,60 +2,80 @@
 package org.pikerobodevils.frc2022.subsystems;
 
 import static org.pikerobodevils.frc2022.Constants.ClimberConstants.*;
+import static org.pikerobodevils.lib.DevilCANSparkMax.check;
 
 import com.revrobotics.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.pikerobodevils.lib.DefaultCANSparkMax;
+import org.pikerobodevils.lib.DevilCANSparkMax;
 
 public class Climber extends SubsystemBase {
-    private CANSparkMax leftClimber = new DefaultCANSparkMax(LEFT_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-    private CANSparkMax rightClimber = new DefaultCANSparkMax(RIGHT_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final DevilCANSparkMax leftClimber =
+            new DevilCANSparkMax(LEFT_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+    private final DevilCANSparkMax rightClimber =
+            new DevilCANSparkMax(RIGHT_MOTOR_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-    private RelativeEncoder leftEncoder = leftClimber.getEncoder();
-    private RelativeEncoder rightEncoder = rightClimber.getEncoder();
+    private final RelativeEncoder leftEncoder = leftClimber.getEncoder();
+    private final RelativeEncoder rightEncoder = rightClimber.getEncoder();
 
-    private SparkMaxPIDController leftController = leftClimber.getPIDController();
-    private SparkMaxPIDController rightController = rightClimber.getPIDController();
+    private final SparkMaxPIDController leftController = leftClimber.getPIDController();
+    private final SparkMaxPIDController rightController = rightClimber.getPIDController();
 
     private NetworkTable climberDataTable = NetworkTableInstance.getDefault().getTable("Climber");
 
     private double kP = KP_HOLD;
 
     private Climber() {
-        leftClimber.restoreFactoryDefaults();
-        leftClimber.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        leftClimber.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 130);
-        leftClimber.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        leftClimber.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0);
-        leftClimber.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-
-        leftClimber.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 10);
-
-        leftController.setP(kP);
-
-        leftClimber.burnFlash();
-
-        leftEncoder.setPosition(0);
-
-        rightClimber.restoreFactoryDefaults();
-        rightClimber.setInverted(true);
-        rightClimber.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        rightClimber.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 130);
-        rightClimber.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true);
-        rightClimber.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0);
-        rightClimber.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true);
-
-        rightClimber.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 10);
-
-        rightController.setP(kP);
-
-        rightClimber.burnFlash();
-
-        rightEncoder.setPosition(0);
+        leftClimber.initialize(this::initLeftController);
+        rightClimber.initialize(this::initRightController);
 
         climberDataTable.getEntry("kP").setDefaultDouble(kP);
+    }
+
+    private boolean initCommon(CANSparkMax controller) {
+        boolean ok = true;
+        ok &= check(controller.restoreFactoryDefaults());
+        ok &= check(controller.setIdleMode(CANSparkMax.IdleMode.kBrake));
+        ok &= check(controller.setOpenLoopRampRate(RAMP_RATE));
+        ok &= check(controller.setSmartCurrentLimit(60));
+        ok &= check(controller.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 130));
+        ok &= check(controller.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true));
+        ok &= check(controller.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0));
+        ok &= check(controller.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true));
+
+        ok &= check(controller.setPeriodicFramePeriod(
+                CANSparkMaxLowLevel.PeriodicFrame.kStatus2, PERIODIC_STATUS_2_PERIOD));
+
+        ok &= check(controller.getEncoder().setPosition(0));
+
+        ok &= check(controller.getPIDController().setP(kP));
+
+        ok &= check(controller.burnFlash());
+
+        return ok;
+    }
+
+    private boolean initLeftController(CANSparkMax controller) {
+        boolean ok = true;
+        ok &= initCommon(controller);
+
+        return ok;
+    }
+
+    private boolean initRightController(CANSparkMax controller) {
+        boolean ok = true;
+        ok &= initCommon(controller);
+        controller.setInverted(true);
+        ok &= check(controller.burnFlash());
+        return ok;
+    }
+
+    private boolean setFramePeriods(CANSparkMax controller) {
+        boolean ok = true;
+        ok &= check(controller.setPeriodicFramePeriod(
+                CANSparkMaxLowLevel.PeriodicFrame.kStatus2, PERIODIC_STATUS_2_PERIOD));
+        return ok;
     }
 
     public void setVoltage(double voltage) {
@@ -111,6 +131,9 @@ public class Climber extends SubsystemBase {
 
     @Override
     public void periodic() {
+        leftClimber.ifHasReset(this::setFramePeriods);
+        rightClimber.ifHasReset(this::setFramePeriods);
+
         updateTelemetry();
     }
 
