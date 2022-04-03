@@ -47,14 +47,15 @@ public class ControlBoard {
     private final Button manualModeSwitch = new Button(new JoystickButton(buttons, 10)
             .negate()
             .or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS))
-            .and(new Trigger(() -> DriverStation.isTeleopEnabled())));
+            .and(new Trigger(DriverStation::isTeleopEnabled)));
 
     private ControlBoard() {}
 
     public double getSpeed() {
-        double speed = left.getY() * 1;
-        if (speed == 0) return 0;
+        // double speed = left.getY() * 1;
+        // if (speed == 0) return 0;
         return left.getY() * -1;
+        // return left.getY() ();
     }
 
     public double getRotation() {
@@ -63,11 +64,11 @@ public class ControlBoard {
     }
 
     public Button getIntakeInButton() {
-        return new Button(intakeInButton.or(intakeInAxisTrigger).or(driverRightTrigger));
+        return new Button(intakeInButton.or(intakeInAxisTrigger)); // .or(driverRightTrigger));
     }
 
     public Button getIntakeOutButton() {
-        return new Button(intakeOutButton.or(intakeOutAxisTrigger).or(driverLeftTrigger));
+        return new Button(intakeOutButton.or(intakeOutAxisTrigger)); // .or(driverLeftTrigger));
     }
 
     public Button getDriverLeftTrigger() {
@@ -79,11 +80,11 @@ public class ControlBoard {
     }
 
     public Button getArmUpButton() {
-        return new Button(armUpButton.or(armUpAxisTrigger).or(driverLeftThumb));
+        return new Button(armUpButton.or(armUpAxisTrigger)); // .or(driverLeftThumb));
     }
 
     public Button getArmDownButton() {
-        return new Button(armDownButton.or(armDownAxisTrigger).or(driverRightThumb));
+        return new Button(armDownButton.or(armDownAxisTrigger)); // .or(driverRightThumb));
     }
 
     public double getArmManualOutput() {
@@ -104,6 +105,14 @@ public class ControlBoard {
 
     public Button getClimberDownButton() {
         return climberDownButton;
+    }
+
+    public Joystick getLeft() {
+        return left;
+    }
+
+    public Joystick getRight() {
+        return right;
     }
 
     public boolean isManualMode() {

@@ -28,7 +28,7 @@ public class Constants {
         public static final int RIGHT_ENCODER_A = 2;
         public static final int RIGHT_ENCODER_B = 3;
 
-        public static final int CURRENT_LIMIT_PER_MOTOR = 40;
+        public static final int CURRENT_LIMIT_PER_MOTOR = 55;
 
         public static final double DISTANCE_PER_PULSE_METERS = Units.inchesToMeters(Math.PI * 6) / 256;
 
@@ -47,30 +47,14 @@ public class Constants {
         public static final SimpleMotorFeedforward FEEDFORWARD = new SimpleMotorFeedforward(KS, KV, KA);
     }
 
-    public static class TrajectoryConstants {
-        public static final double MAX_VELOCITY_MPS = 2;
-        public static final double MAX_ACCEL_MPS = 1;
-        public static final double MAX_VOLTAGE = 5;
-
-        public static final TrajectoryConfig DEFAULT_CONF_FORWARD = new TrajectoryConfig(
-                        MAX_VELOCITY_MPS, MAX_ACCEL_MPS)
-                .setKinematics(DrivetrainConstants.KINEMATICS)
-                .addConstraint(new DifferentialDriveVoltageConstraint(
-                        DrivetrainConstants.FEEDFORWARD, DrivetrainConstants.KINEMATICS, MAX_VOLTAGE));
-        public static final TrajectoryConfig DEFAULT_CONF_REVERSE =
-                Trajectories.copyConfig(DEFAULT_CONF_FORWARD).setReversed(true);
-    }
-
     public static class IntakeConstants {
+
         public static final int LEADER_ID = 1;
         public static final int FOLLOWER_ID = 2;
     }
 
-    public static class AutoConstants {
-        public static final double DEFAULT_ACTION_RANGE = 0.25;
-    }
-
     public static class ArmConstants {
+
         public static final int ARM_LEADER_ID = 7;
         public static final int ARM_ENCODER_ABS_DIO = 4;
         public static final int ARM_ENCODER_QUAD_A_DIO = 5;
@@ -85,11 +69,10 @@ public class Constants {
         public static final double MAX_ACCEL = 260;
         public static final double MAX_VELOCITY = 360;
 
-        /**
+        /*
          * Obtained from sysid
          */
         public static final double KS = 0.22405;
-
         public static final double KG = 1.2986;
         public static final double KV = 0.019113;
         public static final double KA = 0.0044777;
@@ -100,10 +83,32 @@ public class Constants {
         public static final int RIGHT_MOTOR_ID = 9;
 
         public static final double KP_HOLD = 0.5;
+
+        public static final double RAMP_RATE = 0.15;
+
+        public static final int PERIODIC_STATUS_2_PERIOD = 10; // ms
     }
 
     public static class ControlBoardConstants {
         public static final boolean ARM_MANUAL_MODE_ALWAYS = false;
+    }
+
+    public static class AutoConstants {
+        public static final double DEFAULT_ACTION_RANGE = 0.25;
+    }
+
+    public static class TrajectoryConstants {
+        public static final double MAX_VELOCITY_MPS = 2;
+        public static final double MAX_ACCEL_MPS = 1;
+        public static final double MAX_VOLTAGE = 5;
+
+        public static final TrajectoryConfig DEFAULT_CONF_FORWARD = new TrajectoryConfig(
+                        MAX_VELOCITY_MPS, MAX_ACCEL_MPS)
+                .setKinematics(DrivetrainConstants.KINEMATICS)
+                .addConstraint(new DifferentialDriveVoltageConstraint(
+                        DrivetrainConstants.FEEDFORWARD, DrivetrainConstants.KINEMATICS, MAX_VOLTAGE));
+        public static final TrajectoryConfig DEFAULT_CONF_REVERSE =
+                Trajectories.copyConfig(DEFAULT_CONF_FORWARD).setReversed(true);
     }
 
     private Constants() {

@@ -9,8 +9,7 @@ import org.pikerobodevils.frc2022.commands.climber.ClimberHoldPositionCommand;
 import org.pikerobodevils.frc2022.commands.climber.ExtendClimberCommand;
 import org.pikerobodevils.frc2022.commands.climber.RetractClimberCommand;
 import org.pikerobodevils.frc2022.commands.climber.SetSoftLimitsCommand;
-import org.pikerobodevils.frc2022.commands.drivetrain.ArcadeDriveStrategy;
-import org.pikerobodevils.frc2022.commands.drivetrain.DriveStrategyCommand;
+import org.pikerobodevils.frc2022.commands.drivetrain.*;
 import org.pikerobodevils.frc2022.subsystems.Arm;
 import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
@@ -26,10 +25,9 @@ public class RobotContainer {
     private final Climber climber = Climber.getInstance();
 
     public void configureButtonBindings() {
-        Command drivetrainCommand =
-                new DriveStrategyCommand(new ArcadeDriveStrategy(controls::getSpeed, controls::getRotation));
-        // drivetrainCommand = new DriveStrategyCommand(
-        //      new CurvatureDriveStrategy(controls::getSpeed, controls::getRotation, controls.getDriverLeftTrigger()));
+        Command drivetrainCommand;
+        drivetrainCommand = new DriveStrategyCommand(new ShivangDriveStrategy());
+
         drivetrain.setDefaultCommand(drivetrainCommand);
 
         controls.getIntakeInButton().whileHeld(new StartEndCommand(intake::intakeIn, intake::disable, intake));
