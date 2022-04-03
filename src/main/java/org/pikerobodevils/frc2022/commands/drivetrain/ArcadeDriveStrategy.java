@@ -6,15 +6,52 @@ import java.util.function.DoubleSupplier;
 
 public class ArcadeDriveStrategy implements DriveStrategy {
 
-    private DoubleSupplier throttle, turn;
+    private DoubleSupplier speedSupplier, turnSupplier;
+    private boolean squareSpeed = false;
+    private boolean squareTurn = false;
 
-    public ArcadeDriveStrategy(DoubleSupplier throttle, DoubleSupplier turn) {
-        this.throttle = throttle;
-        this.turn = turn;
+    public ArcadeDriveStrategy(DoubleSupplier speedSupplier, DoubleSupplier turnSupplier) {
+        this.speedSupplier = speedSupplier;
+        this.turnSupplier = turnSupplier;
+    }
+
+    public ArcadeDriveStrategy() {
+        this(() -> 0, () -> 0);
+    }
+
+    public ArcadeDriveStrategy withSpeed(DoubleSupplier throttle) {
+        this.speedSupplier = throttle;
+        return this;
+    }
+
+    public ArcadeDriveStrategy withRotation(DoubleSupplier turn) {
+        this.turnSupplier = turn;
+        return this;
+    }
+
+    public ArcadeDriveStrategy squareSpeed(boolean squareSpeed) {
+        this.squareSpeed = squareSpeed;
+        return this;
+    }
+
+    public ArcadeDriveStrategy squareTurn(boolean squareTurn) {
+        this.squareTurn = squareTurn;
+        return this;
+    }
+
+    public ArcadeDriveStrategy squareInputs(boolean squareInputs) {
+        squareSpeed(squareInputs);
+        squareTurn(squareInputs);
+        return this;
     }
 
     @Override
     public DifferentialDrive.WheelSpeeds getWheelSpeeds() {
-        return DifferentialDrive.arcadeDriveIK(throttle.getAsDouble(), turn.getAsDouble(), false);
+        double speed = speedSupplier.getAsDouble();
+        double turn = turnSupplier.getAsDouble();
+
+        if (squareSpeed) speed = Math.copySign(Math.pow(speed, 2), speed);
+        if (squareTurn) turn = Math.copySign(Math.pow(turn, 2), speed);
+        return DifferentialDrive.arcadeDriveIK(speed, turn, false);
     }
 }

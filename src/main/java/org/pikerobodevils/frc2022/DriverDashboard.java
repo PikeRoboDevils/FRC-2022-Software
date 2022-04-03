@@ -3,6 +3,7 @@ package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -36,8 +37,11 @@ public class DriverDashboard {
                 .withPosition(6, 0);
         SmartDashboard.putData(fieldVis);
 
-        var camera = CameraServer.startAutomaticCapture();
-        cameraTab.add(camera).withSize(9, 3).withPosition(0, 0).withWidget(BuiltInWidgets.kCameraStream);
+        if (RobotBase.isReal()) {
+            var camera = CameraServer.startAutomaticCapture();
+            camera.setFPS(15);
+            cameraTab.add(camera).withSize(9, 3).withPosition(0, 0).withWidget(BuiltInWidgets.kCameraStream);
+        }
     }
 
     public void updateEntries() {
