@@ -172,6 +172,11 @@ public class Drivetrain extends SubsystemBase {
         setLeftAndRightVelocity(KINEMATICS.toWheelSpeeds(velocity));
     }
 
+    public void disable() {
+        leftLeader.disable();
+        rightLeader.disable();
+    }
+
     public void setIdleMode(CANSparkMax.IdleMode mode) {
         all.forEach(controller -> {
             controller.setIdleMode(mode);
@@ -227,6 +232,14 @@ public class Drivetrain extends SubsystemBase {
 
     public RamseteController getPathController() {
         return pathController;
+    }
+
+    public PIDController getLeftVelocityPID() {
+        return leftVelocityPID;
+    }
+
+    public PIDController getRightVelocityPID() {
+        return rightVelocityPID;
     }
 
     private void configCANFrames() {
@@ -295,6 +308,7 @@ public class Drivetrain extends SubsystemBase {
     private static void configureController(CANSparkMax controller) {
         controller.setSmartCurrentLimit(CURRENT_LIMIT_PER_MOTOR);
         controller.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        controller.setOpenLoopRampRate(0.05);
         // controller.setOpenLoopRampRate();
         controller.burnFlash();
     }

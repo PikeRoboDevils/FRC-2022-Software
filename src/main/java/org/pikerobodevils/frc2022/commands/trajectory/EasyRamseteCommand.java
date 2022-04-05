@@ -23,8 +23,8 @@ public class EasyRamseteCommand extends RamseteCommand {
                 drivetrain.getFeedforward(),
                 drivetrain.getKinematics(),
                 drivetrain::getWheelSpeeds,
-                new PIDController(KP_VELOCITY, 0, 0),
-                new PIDController(KP_VELOCITY, 0, 0),
+                drivetrain.getLeftVelocityPID(),
+                drivetrain.getRightVelocityPID(),
                 drivetrain::setLeftAndRightVoltage);
         this.trajectory = trajectory;
         this.drivetrain = drivetrain;
@@ -37,7 +37,7 @@ public class EasyRamseteCommand extends RamseteCommand {
 
     @Override
     public void initialize() {
-
+        drivetrain.resetPID();
         if (resetOdometry) {
             drivetrain.resetOdometry(trajectory.getInitialPose());
         }

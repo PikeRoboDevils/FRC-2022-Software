@@ -22,12 +22,12 @@ public class Robot extends TimedRobot {
         super(Constants.PERIOD);
     }
 
-    Drivetrain drivetrain;
-    Climber climber;
-    ControlBoard controlBoard;
-    DriverDashboard dashboard;
-    RobotContainer container;
-    PowerDistribution pdh;
+    private Drivetrain drivetrain;
+    private Climber climber;
+    private ControlBoard controlBoard;
+    private DriverDashboard dashboard;
+    private RobotContainer container;
+    private PowerDistribution pdh;
 
     Command autoCommand = null;
 
