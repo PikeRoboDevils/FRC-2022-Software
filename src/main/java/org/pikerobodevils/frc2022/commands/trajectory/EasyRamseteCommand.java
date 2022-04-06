@@ -3,7 +3,6 @@ package org.pikerobodevils.frc2022.commands.trajectory;
 
 import static org.pikerobodevils.frc2022.Constants.DrivetrainConstants.*;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import org.pikerobodevils.frc2022.DriverDashboard;
