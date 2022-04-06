@@ -3,7 +3,6 @@ package org.pikerobodevils.frc2022.commands.trajectory;
 
 import static org.pikerobodevils.frc2022.Constants.DrivetrainConstants.*;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import org.pikerobodevils.frc2022.DriverDashboard;
@@ -23,8 +22,8 @@ public class EasyRamseteCommand extends RamseteCommand {
                 drivetrain.getFeedforward(),
                 drivetrain.getKinematics(),
                 drivetrain::getWheelSpeeds,
-                new PIDController(KP_VELOCITY, 0, 0),
-                new PIDController(KP_VELOCITY, 0, 0),
+                drivetrain.getLeftVelocityPID(),
+                drivetrain.getRightVelocityPID(),
                 drivetrain::setLeftAndRightVoltage);
         this.trajectory = trajectory;
         this.drivetrain = drivetrain;
@@ -37,7 +36,7 @@ public class EasyRamseteCommand extends RamseteCommand {
 
     @Override
     public void initialize() {
-
+        drivetrain.resetPID();
         if (resetOdometry) {
             drivetrain.resetOdometry(trajectory.getInitialPose());
         }

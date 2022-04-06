@@ -12,7 +12,7 @@ public class IntakeInCommand extends CommandBase {
     }
 
     @Override
-    public void execute() {
+    public void initialize() {
         intake.intakeIn();
     }
 

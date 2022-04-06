@@ -2,6 +2,7 @@
 package org.pikerobodevils.frc2022.subsystems;
 
 import static org.pikerobodevils.frc2022.Constants.ArmConstants.*;
+import static org.pikerobodevils.lib.DevilCANSparkMax.check;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -15,7 +16,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.frc2022.Constants;
-import org.pikerobodevils.lib.DefaultCANSparkMax;
+import org.pikerobodevils.lib.DevilCANSparkMax;
 import org.pikerobodevils.lib.OffsetQuadEncoder;
 import org.pikerobodevils.lib.OneShot;
 
@@ -32,7 +33,7 @@ public class Arm extends SubsystemBase {
 
     private static final double chainReduction = 54.0 / 15.0;
 
-    private final CANSparkMax armMotor;
+    private final DevilCANSparkMax armMotor;
     private final DutyCycleEncoder absoluteEncoder;
     private final OffsetQuadEncoder quadEncoder;
     private final RelativeEncoder neoEncoder;
@@ -56,11 +57,8 @@ public class Arm extends SubsystemBase {
      */
     private Arm() {
 
-        armMotor = new DefaultCANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
-        armMotor.setInverted(false);
-        armMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
-        armMotor.setSmartCurrentLimit(80);
-        // TODO: tune current limit. 30a is too low. 80A is probably higher than we need but we'll see.
+        armMotor = new DevilCANSparkMax(ARM_LEADER_ID, CANSparkMaxLowLevel.MotorType.kBrushless);
+        armMotor.initialize(this::initArmMotor);
 
         neoEncoder = armMotor.getEncoder();
 
@@ -79,6 +77,13 @@ public class Arm extends SubsystemBase {
         enableClosedLoop();
 
         initTelemetry();
+    }
+
+    private boolean initArmMotor(CANSparkMax controller) {
+        boolean ok = true;
+        ok &= check(controller.setIdleMode(CANSparkMax.IdleMode.kBrake));
+        ok &= check(controller.setSmartCurrentLimit(80));
+        return ok;
     }
 
     /**

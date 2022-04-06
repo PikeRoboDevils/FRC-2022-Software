@@ -2,6 +2,7 @@
 package org.pikerobodevils.frc2022.commands.autonomous;
 
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.pikerobodevils.frc2022.Constants;
 import org.pikerobodevils.frc2022.commands.arm.SetArmGoalCommand;
@@ -23,8 +24,10 @@ public class LeftStartTwoBall extends SequentialCommandGroup {
     public LeftStartTwoBall() {
         addCommands(new SetArmGoalCommand(Arm.ArmPosition.INTAKE).withTimeout(1));
         addCommands(new EasyRamseteCommand(startToBall, drivetrain, true).raceWith(new IntakeInCommand()));
+        addCommands(new InstantCommand(drivetrain::disable));
         addCommands(new SetArmGoalCommand(Arm.ArmPosition.SCORE).withTimeout(1));
         addCommands(new EasyRamseteCommand(leftBallToHub, drivetrain, false));
+        addCommands(new InstantCommand(drivetrain::disable));
         addCommands(new IntakeOutCommand().withTimeout(1));
     }
 }
