@@ -1,3 +1,4 @@
+/* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.lib.led;
 
 import edu.wpi.first.wpilibj.AddressableLED;
@@ -27,7 +28,7 @@ public class DevilAddressableLED extends AddressableLED {
         updateNotifier.stop();
         this.pattern = pattern;
         update();
-        if(pattern.isAnimated()) {
+        if (pattern.isAnimated()) {
             updateNotifier.startPeriodic(animationDT);
         }
     }
@@ -36,6 +37,4 @@ public class DevilAddressableLED extends AddressableLED {
         pattern.setLEDs(buffer);
         setData(buffer);
     }
-
-
 }

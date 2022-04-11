@@ -80,6 +80,4 @@ public class DevilCANSparkMax extends CANSparkMax {
         }
         return REVLibError.kOk;
     }
-
-
 }

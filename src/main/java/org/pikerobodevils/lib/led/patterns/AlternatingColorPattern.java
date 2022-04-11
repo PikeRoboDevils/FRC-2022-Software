@@ -1,3 +1,4 @@
+/* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.lib.led.patterns;
 
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
@@ -7,13 +8,13 @@ import org.pikerobodevils.lib.led.LEDPattern;
 public class AlternatingColorPattern implements LEDPattern {
     private Color[] colors;
 
-    public AlternatingColorPattern(Color... colors){
+    public AlternatingColorPattern(Color... colors) {
         this.colors = colors;
     }
 
     @Override
     public void setLEDs(AddressableLEDBuffer buffer) {
-        for (int index = 0; index < buffer.getLength(); index++){
+        for (int index = 0; index < buffer.getLength(); index++) {
             buffer.setLED(index, colors[index % colors.length]);
         }
     }

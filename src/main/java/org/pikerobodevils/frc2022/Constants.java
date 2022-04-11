@@ -15,7 +15,7 @@ public class Constants {
     public static final double PERIOD = RobotBase.isSimulation() ? 0.02 : 0.01;
 
     public static class ControlConstants {
-        public static final double AUTO_CLIMB_PITCH_THRESHOLD = 5; //degrees
+        public static final double AUTO_CLIMB_PITCH_THRESHOLD = 5; // degrees
     }
 
     public static class DrivetrainConstants {
@@ -45,7 +45,7 @@ public class Constants {
         public static final double KV = 1.7472; // V*S/M
         public static final double KA = 1.1591; // V*S/M^2
 
-        public static final double KP_VELOCITY = 2.2611;
+        public static final double KP_VELOCITY = 1;
 
         public static final DifferentialDriveKinematics KINEMATICS =
                 new DifferentialDriveKinematics(TRACK_WIDTH_METERS);

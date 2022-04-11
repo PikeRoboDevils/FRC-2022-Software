@@ -4,17 +4,11 @@ package org.pikerobodevils.frc2022;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.subsystems.MemeMachine;
-import org.pikerobodevils.lib.led.DevilAddressableLED;
-import org.pikerobodevils.lib.led.patterns.AlternatingColorPattern;
-import org.pikerobodevils.lib.led.patterns.ChasePattern;
-import org.pikerobodevils.lib.led.patterns.ScannerPattern;
-import org.pikerobodevils.lib.led.patterns.SolidLEDPattern;
 import org.pikerobodevils.lib.util.Util;
 
 /**
@@ -79,8 +73,8 @@ public class Robot extends TimedRobot {
 
         MemeMachine.initializeMemes();
 
-        //DevilAddressableLED led = new DevilAddressableLED(4, 15);
-        //led.setPattern(new ScannerPattern(Color.kBlue, Color.kRed, 3));
+        // DevilAddressableLED led = new DevilAddressableLED(4, 15);
+        // led.setPattern(new ScannerPattern(Color.kBlue, Color.kRed, 3));
     }
 
     @Override

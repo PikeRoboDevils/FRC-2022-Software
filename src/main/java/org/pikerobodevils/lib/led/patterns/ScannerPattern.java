@@ -1,3 +1,4 @@
+/* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.lib.led.patterns;
 
 import edu.wpi.first.math.MathUtil;
@@ -37,8 +38,8 @@ public class ScannerPattern implements LEDPattern {
         double distanceFromEye;
 
         for (int index = 0; index < bufferLength; index++) {
-            distanceFromEye = MathUtil.clamp( Math.abs(m_eyePosition - index),0,m_Length);
-            intensity = 1 - distanceFromEye/m_Length;
+            distanceFromEye = MathUtil.clamp(Math.abs(m_eyePosition - index), 0, m_Length);
+            intensity = 1 - distanceFromEye / m_Length;
             red = MathUtil.interpolate(m_BackgroundColor.red, m_EyeColor.red, intensity);
             green = MathUtil.interpolate(m_BackgroundColor.green, m_EyeColor.green, intensity);
             blue = MathUtil.interpolate(m_BackgroundColor.blue, m_EyeColor.blue, intensity);

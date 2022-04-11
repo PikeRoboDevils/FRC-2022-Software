@@ -41,6 +41,7 @@ public class DriverDashboard {
                 .withSize(2, 1);
         pathEntry = dashTab.add("PathToRun", "").getEntry();
         SmartDashboard.putData(fieldVis);
+
         if (RobotBase.isReal()) {
             var camera = CameraServer.startAutomaticCapture();
             camera.setFPS(15);
@@ -58,6 +59,7 @@ public class DriverDashboard {
         autoChooser.addOption("Universal Drive Back", new UniversalDriveBackAutonomous());
         autoChooser.addOption("twoball pls dont use yet", new LeftStartTwoBall());
         autoChooser.addOption("Run Path", new RunPathCommand(() -> pathEntry.getString("")));
+        autoChooser.addOption("Right Tarmac dont use", new RightTarmacLeftTwoBall());
     }
 
     public Command getSelectedAutoCommand() {

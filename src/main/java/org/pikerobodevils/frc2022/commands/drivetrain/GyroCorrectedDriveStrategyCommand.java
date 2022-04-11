@@ -3,6 +3,8 @@ package org.pikerobodevils.frc2022.commands.drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
@@ -50,6 +52,9 @@ public class GyroCorrectedDriveStrategyCommand extends CommandBase {
             correctionController.setSetpoint(gyro.getAsDouble());
         }
         prevShouldCorrect = correct;
+        if(DriverStation.isAutonomous()) {
+            correct = false;
+        }
         if (correct) {
             correction = correctionController.calculate(gyro.getAsDouble());
             correction = MathUtil.applyDeadband(correction, 0.02);
