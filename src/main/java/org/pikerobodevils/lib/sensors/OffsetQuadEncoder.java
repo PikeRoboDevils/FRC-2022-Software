@@ -1,5 +1,5 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
-package org.pikerobodevils.lib;
+package org.pikerobodevils.lib.sensors;
 
 import edu.wpi.first.wpilibj.DigitalSource;
 import edu.wpi.first.wpilibj.Encoder;

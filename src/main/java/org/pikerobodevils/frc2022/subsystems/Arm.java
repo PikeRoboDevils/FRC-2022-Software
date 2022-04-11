@@ -2,7 +2,7 @@
 package org.pikerobodevils.frc2022.subsystems;
 
 import static org.pikerobodevils.frc2022.Constants.ArmConstants.*;
-import static org.pikerobodevils.lib.DevilCANSparkMax.check;
+import static org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax.check;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -16,9 +16,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.frc2022.Constants;
-import org.pikerobodevils.lib.DevilCANSparkMax;
-import org.pikerobodevils.lib.OffsetQuadEncoder;
-import org.pikerobodevils.lib.OneShot;
+import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
+import org.pikerobodevils.lib.sensors.OffsetQuadEncoder;
+import org.pikerobodevils.lib.util.OneShot;
 
 public class Arm extends SubsystemBase {
 
@@ -150,7 +150,7 @@ public class Arm extends SubsystemBase {
 
     public void runOpenLoop(double output) {
         disableClosedLoop();
-        setVoltage(output * 6);
+        setVoltage(output * 12);
     }
 
     public void disable() {

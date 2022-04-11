@@ -2,13 +2,13 @@
 package org.pikerobodevils.frc2022.subsystems;
 
 import static org.pikerobodevils.frc2022.Constants.ClimberConstants.*;
-import static org.pikerobodevils.lib.DevilCANSparkMax.check;
+import static org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax.check;
 
 import com.revrobotics.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import org.pikerobodevils.lib.DevilCANSparkMax;
+import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
 
 public class Climber extends SubsystemBase {
     private final DevilCANSparkMax leftClimber =
@@ -39,7 +39,8 @@ public class Climber extends SubsystemBase {
         ok &= check(controller.setIdleMode(CANSparkMax.IdleMode.kBrake));
         ok &= check(controller.setOpenLoopRampRate(RAMP_RATE));
         ok &= check(controller.setSmartCurrentLimit(60));
-        ok &= check(controller.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 130));
+        ok &= check(controller.setSecondaryCurrentLimit(90));
+        ok &= check(controller.setSoftLimit(CANSparkMax.SoftLimitDirection.kForward, 94));
         ok &= check(controller.enableSoftLimit(CANSparkMax.SoftLimitDirection.kForward, true));
         ok &= check(controller.setSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, 0));
         ok &= check(controller.enableSoftLimit(CANSparkMax.SoftLimitDirection.kReverse, true));
@@ -113,13 +114,25 @@ public class Climber extends SubsystemBase {
         rightController.setReference(rightEncoder.getPosition(), CANSparkMax.ControlType.kPosition);
     }
 
-    public void updateTelemetry() {
+    public void setPositionClosedLoop(double position) {
+        leftController.setReference(position, CANSparkMax.ControlType.kPosition);
+        rightController.setReference(position, CANSparkMax.ControlType.kPosition);
+    }
+
+    public boolean isFullyRetracted() {
+        // return rightClimber.getFault(CANSparkMax.FaultID.kSoftLimitRev) &&
+        // leftClimber.getFault(CANSparkMax.FaultID.kSoftLimitRev);
+        return rightEncoder.getPosition() < 5 && leftEncoder.getPosition() < 5;
+    }
+
+    private void updateTelemetry() {
         climberDataTable.getEntry("LeftPosition").setDouble(leftEncoder.getPosition());
         climberDataTable.getEntry("RightPosition").setDouble(rightEncoder.getPosition());
         climberDataTable.getEntry("LeftAppliedOutput").setDouble(leftClimber.getAppliedOutput());
         climberDataTable.getEntry("RightAppliedOutput").setDouble(rightClimber.getAppliedOutput());
         climberDataTable.getEntry("LeftOutputCurrent").setDouble(leftClimber.getOutputCurrent());
         climberDataTable.getEntry("RightOutputCurrent").setDouble(rightClimber.getOutputCurrent());
+        climberDataTable.getEntry("FullyRetracted").setBoolean(isFullyRetracted());
 
         double ntkP = climberDataTable.getEntry("kP").getDouble(0);
         if (ntkP != kP) {

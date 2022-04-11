@@ -49,6 +49,9 @@ public class ControlBoard {
             .or(new Trigger(() -> ARM_MANUAL_MODE_ALWAYS))
             .and(new Trigger(DriverStation::isTeleopEnabled)));
 
+    private final Button playerOne = new JoystickButton(buttons, 6);
+    private final Button playerTwo = new JoystickButton(buttons, 15);
+
     private ControlBoard() {}
 
     public double getSpeed() {
@@ -105,6 +108,14 @@ public class ControlBoard {
 
     public Button getClimberDownButton() {
         return climberDownButton;
+    }
+
+    public Button getPlayerOne() {
+        return playerOne;
+    }
+
+    public Button getPlayerTwo() {
+        return playerTwo;
     }
 
     public Joystick getLeft() {

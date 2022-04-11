@@ -3,6 +3,7 @@ package org.pikerobodevils.frc2022;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -11,11 +12,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import org.pikerobodevils.frc2022.commands.autonomous.LeftStartTwoBall;
-import org.pikerobodevils.frc2022.commands.autonomous.NoAutonomous;
-import org.pikerobodevils.frc2022.commands.autonomous.UniversalDriveBackAutonomous;
-import org.pikerobodevils.frc2022.commands.autonomous.UniversalOneBallDriveAuto;
+import org.pikerobodevils.frc2022.commands.autonomous.*;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
+import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
 
 public class DriverDashboard {
 
@@ -24,6 +23,8 @@ public class DriverDashboard {
     private ShuffleboardTab cameraTab = Shuffleboard.getTab("Camera");
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+
+    private NetworkTableEntry pathEntry;
 
     private Field2d fieldVis = new Field2d();
 
@@ -35,8 +36,11 @@ public class DriverDashboard {
                 .withWidget(BuiltInWidgets.kField)
                 .withSize(3, 2)
                 .withPosition(6, 0);
+        dashTab.addBoolean("Initialization Successful?", () -> !DevilCANSparkMax.hasFailedInitialization())
+                .withPosition(3, 0)
+                .withSize(2, 1);
+        pathEntry = dashTab.add("PathToRun", "").getEntry();
         SmartDashboard.putData(fieldVis);
-
         if (RobotBase.isReal()) {
             var camera = CameraServer.startAutomaticCapture();
             camera.setFPS(15);
@@ -53,6 +57,7 @@ public class DriverDashboard {
         autoChooser.setDefaultOption("Universal One Ball then Drive", new UniversalOneBallDriveAuto());
         autoChooser.addOption("Universal Drive Back", new UniversalDriveBackAutonomous());
         autoChooser.addOption("twoball pls dont use yet", new LeftStartTwoBall());
+        autoChooser.addOption("Run Path", new RunPathCommand(() -> pathEntry.getString("")));
     }
 
     public Command getSelectedAutoCommand() {

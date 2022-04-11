@@ -10,7 +10,7 @@
   "motor controllers": [
     "SPARK MAX (Brushless)",
     "SPARK MAX (Brushless)",
-    "PWM"
+    "SPARK MAX (Brushless)"
   ],
   "number of samples per average": 1,
   "primary encoder inverted": false,

@@ -24,10 +24,10 @@ public class LeftStartTwoBall extends SequentialCommandGroup {
     public LeftStartTwoBall() {
         addCommands(new SetArmGoalCommand(Arm.ArmPosition.INTAKE).withTimeout(1));
         addCommands(new EasyRamseteCommand(startToBall, drivetrain, true).raceWith(new IntakeInCommand()));
-        addCommands(new InstantCommand(drivetrain::disable));
+        addCommands(new InstantCommand(drivetrain::disable, drivetrain));
         addCommands(new SetArmGoalCommand(Arm.ArmPosition.SCORE).withTimeout(1));
         addCommands(new EasyRamseteCommand(leftBallToHub, drivetrain, false));
-        addCommands(new InstantCommand(drivetrain::disable));
+        addCommands(new InstantCommand(drivetrain::disable, drivetrain));
         addCommands(new IntakeOutCommand().withTimeout(1));
     }
 }

@@ -4,11 +4,18 @@ package org.pikerobodevils.frc2022;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
-import org.pikerobodevils.lib.Util;
+import org.pikerobodevils.frc2022.subsystems.MemeMachine;
+import org.pikerobodevils.lib.led.DevilAddressableLED;
+import org.pikerobodevils.lib.led.patterns.AlternatingColorPattern;
+import org.pikerobodevils.lib.led.patterns.ChasePattern;
+import org.pikerobodevils.lib.led.patterns.ScannerPattern;
+import org.pikerobodevils.lib.led.patterns.SolidLEDPattern;
+import org.pikerobodevils.lib.util.Util;
 
 /**
  * The VM is configured to automatically run this class, and to call the methods corresponding to
@@ -49,7 +56,7 @@ public class Robot extends TimedRobot {
         }
         DriverStation.startDataLog(DataLogManager.getLog());
 
-        if (isSimulation()) DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
+        if (isSimulation() | true) DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
         DataLogManager.log("Initializing Robot...");
         DataLogManager.log("Build debug info:");
@@ -69,6 +76,11 @@ public class Robot extends TimedRobot {
         pdh.clearStickyFaults();
 
         container.configureButtonBindings();
+
+        MemeMachine.initializeMemes();
+
+        //DevilAddressableLED led = new DevilAddressableLED(4, 15);
+        //led.setPattern(new ScannerPattern(Color.kBlue, Color.kRed, 3));
     }
 
     @Override

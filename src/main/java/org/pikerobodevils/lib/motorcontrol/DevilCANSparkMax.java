@@ -1,5 +1,5 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
-package org.pikerobodevils.lib;
+package org.pikerobodevils.lib.motorcontrol;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
@@ -10,7 +10,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class DevilCANSparkMax extends CANSparkMax {
-    public static final int PARAMETER_SET_ATTEMPT_COUNT = 5;
+
+    private static boolean hasFailedInitialization = false;
+
+    public static final int PARAMETER_SET_ATTEMPT_COUNT = 7;
 
     public DevilCANSparkMax(int deviceId, MotorType type) {
         super(deviceId, type);
@@ -44,6 +47,7 @@ public class DevilCANSparkMax extends CANSparkMax {
             if (setAttemptNumber >= PARAMETER_SET_ATTEMPT_COUNT) {
                 DriverStation.reportError(
                         String.format("Spark Max ID %d: Failed to initialize!!", getDeviceId()), false);
+                hasFailedInitialization = true;
                 break;
             }
         }
@@ -62,6 +66,10 @@ public class DevilCANSparkMax extends CANSparkMax {
         return false;
     }
 
+    public static boolean hasFailedInitialization() {
+        return hasFailedInitialization;
+    }
+
     public static boolean check(REVLibError error) {
         return error == REVLibError.kOk;
     }
@@ -72,4 +80,6 @@ public class DevilCANSparkMax extends CANSparkMax {
         }
         return REVLibError.kOk;
     }
+
+
 }

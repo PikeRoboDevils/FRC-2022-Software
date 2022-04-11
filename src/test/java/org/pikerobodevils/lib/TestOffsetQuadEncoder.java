@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.simulation.EncoderSim;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.pikerobodevils.lib.sensors.OffsetQuadEncoder;
 
 public class TestOffsetQuadEncoder {
     private OffsetQuadEncoder encoder;

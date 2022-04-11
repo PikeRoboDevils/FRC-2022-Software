@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.pikerobodevils.frc2022.Constants;
 
@@ -71,7 +72,7 @@ public class Trajectories {
             return fromWaypoints(filepath, conf);
         } catch (IOException exception) {
             DriverStation.reportError("Failed to load auto trajectory: " + name, false);
-            return new Trajectory();
+            return new Trajectory(Arrays.asList(new Trajectory.State()));
         }
     }
 

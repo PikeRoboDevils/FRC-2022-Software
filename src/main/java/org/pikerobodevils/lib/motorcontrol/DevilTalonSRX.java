@@ -1,11 +1,12 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
-package org.pikerobodevils.lib;
+package org.pikerobodevils.lib.motorcontrol;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.TalonSRXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DriverStation;
+
 import java.util.function.Function;
 
 public class DevilTalonSRX extends WPI_TalonSRX {

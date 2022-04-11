@@ -20,6 +20,8 @@ import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
@@ -29,7 +31,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Set;
 import org.pikerobodevils.frc2022.Constants;
-import org.pikerobodevils.lib.DevilCANSparkMax;
+import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
 
 public class Drivetrain extends SubsystemBase {
 
@@ -73,9 +75,11 @@ public class Drivetrain extends SubsystemBase {
 
     public final Field2d field = new Field2d();
 
+    private NetworkTable drivetrainTable = NetworkTableInstance.getDefault().getTable("Drivetrain");
+
     // Sim stuff
     private final DifferentialDrivetrainSim driveSim = new DifferentialDrivetrainSim(
-            DCMotor.getNEO(3), 7.56, 12, 60, Units.inchesToMeters(3), Units.inchesToMeters(26), null);
+            DCMotor.getNEO(3), 7.56, 18, 60, Units.inchesToMeters(3), TRACK_WIDTH_METERS, null);
     private final EncoderSim leftEncoderSim = new EncoderSim(leftEncoder);
     private final EncoderSim rightEncoderSim = new EncoderSim(rightEncoder);
     int dev = SimDeviceDataJNI.getSimDeviceHandle("navX-Sensor[0]");
@@ -88,7 +92,7 @@ public class Drivetrain extends SubsystemBase {
      * the {@link #getInstance()} method to get the singleton instance.
      */
     private Drivetrain() {
-
+        System.out.println("Conversion factor :" + WHEEL_CIRCUMFERENCE_METERS);
         leftLeader.setInverted(false);
         configureController(leftLeader);
 
@@ -112,7 +116,7 @@ public class Drivetrain extends SubsystemBase {
         leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 
-        navX.enableBoardlevelYawReset(true);
+        navX.enableBoardlevelYawReset(false);
         // Resetting the gyro does not work while the navX is calibrating
         var counter = 0;
         var timedOut = false;
@@ -185,6 +189,18 @@ public class Drivetrain extends SubsystemBase {
 
     public Rotation2d getGyroAngle() {
         return navX.getRotation2d();
+    }
+
+    public double getYaw() {
+        return navX.getYaw();
+    }
+
+    public double getPitch() {
+        return navX.getPitch();
+    }
+
+    public double getRoll() {
+        return navX.getRoll();
     }
 
     public Pose2d getPose() {
@@ -272,18 +288,23 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putBoolean("calibrating", navX.isCalibrating());
-        SmartDashboard.putNumber("gyro angle", getGyroAngle().getDegrees());
+        drivetrainTable.getEntry("LeftVelocity").setDouble(leftEncoder.getRate());
+        drivetrainTable.getEntry("RightVelocity").setDouble(rightEncoder.getRate());
 
-        SmartDashboard.putNumber("Velocity", (leftEncoder.getRate() + rightEncoder.getRate()) / 2);
+        drivetrainTable.getEntry("LeftPosition").setDouble(leftEncoder.getDistance());
+        drivetrainTable.getEntry("RightPosition").setDouble(rightEncoder.getDistance());
+
+        drivetrainTable.getEntry("LeftPIDVelocity").setDouble(leftVelocityPID.getSetpoint());
+        drivetrainTable.getEntry("RightPIDVelocity").setDouble(rightVelocityPID.getSetpoint());
+
+        drivetrainTable.getEntry("LeftAppliedOuput").setDouble(leftLeader.getAppliedOutput());
+        drivetrainTable.getEntry("RightAppliedOutput").setDouble(rightLeader.getAppliedOutput());
+
+        drivetrainTable.getEntry("Yaw").setDouble(getYaw());
+        drivetrainTable.getEntry("Pitch").setDouble(navX.getPitch());
+        drivetrainTable.getEntry("Roll").setDouble(navX.getRoll());
 
         pose = odometry.update(getGyroAngle(), leftEncoder.getDistance(), rightEncoder.getDistance());
-
-        SmartDashboard.putNumber("X", pose.getX());
-        SmartDashboard.putNumber("Y", pose.getY());
-        SmartDashboard.putNumber("leftencoder", leftEncoder.getRaw());
-        SmartDashboard.putNumber("rightencoder", rightEncoder.getRaw());
-        SmartDashboard.putNumber("Rotation", pose.getRotation().getDegrees());
 
         field.setRobotPose(pose);
 
