@@ -60,6 +60,9 @@ public class DriverDashboard {
         autoChooser.addOption("twoball pls dont use yet", new LeftStartTwoBall());
         autoChooser.addOption("Run Path", new RunPathCommand(() -> pathEntry.getString("")));
         autoChooser.addOption("Right Tarmac dont use", new RightTarmacLeftTwoBall());
+        autoChooser.addOption("Right Tarmac Three dont use", new RightTarmacRightThreeBall());
+
+
     }
 
     public Command getSelectedAutoCommand() {
