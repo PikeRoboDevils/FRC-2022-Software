@@ -20,7 +20,7 @@ public class RightTarmacRightThreeBall extends SequentialCommandGroup {
     Trajectory RightTarmacRightBallToHub = Trajectories.generateNamedQuinticTrajectory(
             "RightTarmacRightBallToHub", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
     Trajectory RightTarmacLeftToNextBall = Trajectories.generateNamedTrajectory(
-            "RightTarmacLeftToNextBall", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
+            "RightTarmacLeftToNextBall", Constants.TrajectoryConstants.DEFAULT_CONF_REVERSE);
     Trajectory RightTarmacLeftNextToHub = Trajectories.generateNamedQuinticTrajectory(
             "RightTarmacLeftNextToHub", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
     Trajectory RightTarmacLeftIntakeBall = Trajectories.generateNamedQuinticTrajectory(
