@@ -16,9 +16,12 @@ public class RainbowPattern implements LEDPattern {
     }
 
     @Override
-    public void setLEDs(AddressableLEDBuffer buffer, boolean firstRun) {
-        if (firstRun) timer.reset();
+    public void reset() {
+        timer.reset();
+    }
 
+    @Override
+    public void setLEDs(AddressableLEDBuffer buffer) {
         if (timer.advanceIfElapsed(1 / speed)) {
 
             int currentHue;

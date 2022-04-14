@@ -14,13 +14,11 @@ public class DevilAddressableLED extends AddressableLED {
 
     private LEDPattern pattern;
 
-    private final double animationDT = 0.005;
+    private final double animationDT = 0.01;
 
     public DevilAddressableLED(int port, int length) {
         super(port);
-        updateNotifier = new Notifier(() -> {
-            update(false);
-        });
+        updateNotifier = new Notifier(this::update);
         buffer = new AddressableLEDBuffer(length);
         setLength(length);
         setData(buffer);
@@ -31,9 +29,11 @@ public class DevilAddressableLED extends AddressableLED {
     public void setPattern(LEDPattern pattern) {
         updateNotifier.stop();
         this.pattern = pattern;
-        update(true);
-        if (pattern.isAnimated()) {
+        this.pattern.reset();
+        if (this.pattern.isAnimated()) {
             updateNotifier.startPeriodic(animationDT);
+        } else {
+            updateNotifier.startSingle(animationDT);
         }
     }
 
@@ -41,8 +41,8 @@ public class DevilAddressableLED extends AddressableLED {
         setPattern(new SolidLEDPattern(Color.kBlack));
     }
 
-    public void update(boolean restart) {
-        pattern.setLEDs(buffer, restart);
+    public void update() {
+        pattern.setLEDs(buffer);
         setData(buffer);
     }
 }

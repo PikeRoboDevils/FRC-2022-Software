@@ -13,7 +13,7 @@ public class SolidLEDPattern implements LEDPattern {
     }
 
     @Override
-    public void setLEDs(AddressableLEDBuffer buffer, boolean restart) {
+    public void setLEDs(AddressableLEDBuffer buffer) {
         for (int i = 0; i < buffer.getLength(); i++) {
             buffer.setLED(i, color);
         }

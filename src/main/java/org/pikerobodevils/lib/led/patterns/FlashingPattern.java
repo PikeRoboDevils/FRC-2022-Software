@@ -18,12 +18,14 @@ public class FlashingPattern implements LEDPattern {
     }
 
     @Override
-    public void setLEDs(AddressableLEDBuffer buffer, boolean restart) {
-        if (restart) {
-            timer.reset();
-            timer.start();
-            on = true;
-        }
+    public void reset() {
+        timer.reset();
+        timer.start();
+        on = true;
+    }
+
+    @Override
+    public void setLEDs(AddressableLEDBuffer buffer) {
         if (timer.advanceIfElapsed(1 / frequency)) {
             var colorToSet = Color.kBlack;
             on = !on;

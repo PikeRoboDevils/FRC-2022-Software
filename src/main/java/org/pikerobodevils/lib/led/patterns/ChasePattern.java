@@ -17,7 +17,7 @@ public class ChasePattern implements LEDPattern {
     }
 
     @Override
-    public void setLEDs(AddressableLEDBuffer buffer, boolean restart) {
+    public void setLEDs(AddressableLEDBuffer buffer) {
         int numberOfColors = m_Colors.length;
         int effectiveIndex;
         int colorIndex;

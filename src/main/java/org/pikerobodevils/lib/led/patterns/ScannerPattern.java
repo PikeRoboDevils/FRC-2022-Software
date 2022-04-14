@@ -34,7 +34,7 @@ public class ScannerPattern implements LEDPattern {
     }
 
     @Override
-    public void setLEDs(AddressableLEDBuffer buffer, boolean restart) {
+    public void setLEDs(AddressableLEDBuffer buffer) {
         timer.start();
         int bufferLength = buffer.getLength();
         double intensity;

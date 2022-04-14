@@ -13,7 +13,7 @@ public class AlternatingColorPattern implements LEDPattern {
     }
 
     @Override
-    public void setLEDs(AddressableLEDBuffer buffer, boolean restart) {
+    public void setLEDs(AddressableLEDBuffer buffer) {
         for (int index = 0; index < buffer.getLength(); index++) {
             buffer.setLED(index, colors[index % colors.length]);
         }

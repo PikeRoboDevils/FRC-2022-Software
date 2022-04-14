@@ -11,5 +11,9 @@ public class MemeMachine {
         for (int i = 0; i < Constants.MEME_COUNT; i++) {
             HAL.report(FRCNetComm.tResourceType.kResourceType_NidecBrushless, i + 1);
         }
+
+        for (int i = 0; i < 1018; i++) {
+            HAL.report(FRCNetComm.tResourceType.kResourceType_DigilentDMC60, i + 1);
+        }
     }
 }
