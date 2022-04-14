@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.commands.autonomous.*;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.trajectory.Trajectories;
@@ -28,6 +28,8 @@ public class DriverDashboard {
 
     private NetworkTableEntry pathEntry;
 
+    private NetworkTableEntry delayTime;
+
     private Field2d fieldVis = new Field2d();
 
     private DriverDashboard() {
@@ -38,13 +40,21 @@ public class DriverDashboard {
                 .withWidget(BuiltInWidgets.kField)
                 .withSize(3, 2)
                 .withPosition(6, 0);
+        delayTime = dashTab.add("Autonomous Delay Time", 0.0)
+                .withSize(2, 1)
+                .withPosition(3, 0)
+                .getEntry();
+        delayTime.setDouble(0);
         dashTab.addBoolean(
                         "Initialization Successful?",
                         () -> !DevilCANSparkMax.hasFailedInitialization() && !DevilTalonSRX.hasFailedInitialization())
-                .withPosition(3, 0)
+                .withPosition(0, 1)
                 .withSize(2, 1);
-        dashTab.addBoolean("Trajectories Successful?", Trajectories::isTrajectoriesSuccessful);
-        pathEntry = dashTab.add("PathToRun", "").getEntry();
+        dashTab.addBoolean("Trajectories Successful?", Trajectories::isTrajectoriesSuccessful)
+                .withPosition(0, 2)
+                .withSize(2, 1);
+        dashTab.add("STOP AUTO", new InstantCommand(CommandScheduler.getInstance()::cancelAll).withName("STOP AUTO"));
+        // pathEntry = dashTab.add("PathToRun", "").getEntry();
         SmartDashboard.putData(fieldVis);
 
         if (RobotBase.isReal()) {
@@ -62,16 +72,16 @@ public class DriverDashboard {
         autoChooser.addOption("No Auto", new NoAutonomous());
         autoChooser.setDefaultOption("Universal One Ball then Drive", new UniversalOneBallDriveAuto());
         autoChooser.addOption("Universal Drive Back", new UniversalDriveBackAutonomous());
-        autoChooser.addOption("twoball pls dont use yet", new LeftStartTwoBall());
-        autoChooser.addOption("Run Path", new RunPathCommand(() -> pathEntry.getString("")));
-        autoChooser.addOption("Right Tarmac 2 Ball", new RightTarmacLeftTwoBall());
-        autoChooser.addOption("Right Tarmac 3 Ball", new RightTarmacThreeBall());
+        autoChooser.addOption("Left Tarmac 2 Ball", new LeftStartTwoBall());
+        // autoChooser.addOption("Run Path", new RunPathCommand(() -> pathEntry.getString("")));
+        autoChooser.addOption("Right Tarmac Left 2 Ball", new RightTarmacLeftTwoBall());
+        autoChooser.addOption("Right Tarmac Left 3 Ball", new RightTarmacLeftThreeBall());
         autoChooser.addOption("Right Tarmac Right 2 Ball", new RightTarmacRightTwoBall());
         autoChooser.addOption("Right Tarmac Right 3 Ball", new RightTarmacRightThreeBall());
     }
 
     public Command getSelectedAutoCommand() {
-        return autoChooser.getSelected();
+        return autoChooser.getSelected().beforeStarting(new WaitCommand(delayTime.getDouble(0)));
     }
 
     public void displayTrajectory(Trajectory trajectory) {

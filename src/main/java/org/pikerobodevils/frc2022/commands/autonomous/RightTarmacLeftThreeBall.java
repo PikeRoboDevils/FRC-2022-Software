@@ -15,7 +15,7 @@ import org.pikerobodevils.frc2022.subsystems.Arm;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
-public class RightTarmacThreeBall extends SequentialCommandGroup {
+public class RightTarmacLeftThreeBall extends SequentialCommandGroup {
     static Trajectory rightHubToRightBall1 =
             Trajectories.generateNamedTrajectory("RightHubToRightBall1", DEFAULT_CONF_REVERSE);
     static Trajectory rightHubToRightBall2 =
@@ -24,7 +24,7 @@ public class RightTarmacThreeBall extends SequentialCommandGroup {
             Trajectories.generateNamedQuinticTrajectory("RightBallToRightHub", DEFAULT_CONF_FORWARD);
     static Trajectory rightHubBackUp = Trajectories.generateNamedTrajectory("RightHubBackUp", DEFAULT_CONF_REVERSE);
 
-    public RightTarmacThreeBall() {
+    public RightTarmacLeftThreeBall() {
         addCommands(new RightTarmacLeftTwoBall());
         addCommands(new EasyRamseteCommand(rightHubToRightBall1, Drivetrain.getInstance(), false)
                 .disableWhenFinished()
