@@ -3,6 +3,7 @@ package org.pikerobodevils.frc2022.commands.arm;
 
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.pikerobodevils.frc2022.subsystems.Arm;
 
@@ -46,5 +47,9 @@ public class SetArmGoalCommand extends CommandBase {
         } else {
             return timer.hasElapsed(2);
         }
+    }
+
+    public Command dontWait() {
+        return this.until(() -> true);
     }
 }

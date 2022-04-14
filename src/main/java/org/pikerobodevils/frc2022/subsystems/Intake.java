@@ -43,8 +43,21 @@ public class Intake extends SubsystemBase {
         setIntakeSpeed(speed);
     }
 
+    public boolean isIntaking() {
+        return intakeMotor.getMotorOutputPercent() > 0;
+    }
+
+    public boolean isExhausting() {
+        return intakeMotor.getMotorOutputPercent() < 0;
+    }
+
     public void disable() {
         setIntakeSpeed(0);
+    }
+
+    @Override
+    public void periodic() {
+        super.periodic();
     }
 
     private static final Intake INSTANCE = new Intake();

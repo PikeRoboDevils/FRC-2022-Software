@@ -2,6 +2,7 @@
 package org.pikerobodevils.frc2022.commands.autonomous;
 
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import org.pikerobodevils.frc2022.Constants;
 import org.pikerobodevils.frc2022.commands.arm.SetArmGoalCommand;
@@ -12,21 +13,23 @@ import org.pikerobodevils.frc2022.subsystems.Arm;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
-public class RightTarmacLeftTwoBall extends SequentialCommandGroup {
+public class RightTarmacRightTwoBall extends SequentialCommandGroup {
+    Drivetrain drivetrain = Drivetrain.getInstance();
 
-    private final Drivetrain drivetrain = Drivetrain.getInstance();
-    Trajectory rightTarmacStartToBall = Trajectories.generateNamedTrajectory(
-            "RightTarmacLeftToBall", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
-    Trajectory rightTarmacLeftBallToHub = Trajectories.generateNamedTrajectory(
-            "RightTarmacLeftBallToHub", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
+    static Trajectory rightTarmacRightToBall = Trajectories.generateNamedTrajectory(
+            "RightTarmacRightToBall", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
+    static Trajectory rightTarmacRightBallToHub = Trajectories.generateNamedQuinticTrajectory(
+            "RightTarmacRightBallToHub", Constants.TrajectoryConstants.DEFAULT_CONF_FORWARD);
 
-    public RightTarmacLeftTwoBall() {
+    public RightTarmacRightTwoBall(Command... commands) {
+        addRequirements(drivetrain);
         addCommands(new SetArmGoalCommand(Arm.ArmPosition.INTAKE).withTimeout(1));
-        addCommands(new EasyRamseteCommand(rightTarmacStartToBall, drivetrain, true)
+        addCommands(new EasyRamseteCommand(rightTarmacRightToBall, drivetrain, true)
                 .disableWhenFinished()
-                .raceWith(new IntakeInCommand()));
+                .raceWith(new IntakeInCommand())
+                .andThen(new IntakeInCommand().withTimeout(0.5)));
         addCommands(new SetArmGoalCommand(Arm.ArmPosition.SCORE).withTimeout(1));
-        addCommands(new EasyRamseteCommand(rightTarmacLeftBallToHub, drivetrain, false).andThen(drivetrain::disable));
+        addCommands(new EasyRamseteCommand(rightTarmacRightBallToHub, drivetrain, false).disableWhenFinished());
         addCommands(new IntakeOutCommand().withTimeout(0.5));
     }
 }

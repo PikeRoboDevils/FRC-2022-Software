@@ -4,6 +4,8 @@ package org.pikerobodevils.lib.led;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.util.Color;
+import org.pikerobodevils.lib.led.patterns.SolidLEDPattern;
 
 public class DevilAddressableLED extends AddressableLED {
     private AddressableLEDBuffer buffer;
@@ -12,29 +14,35 @@ public class DevilAddressableLED extends AddressableLED {
 
     private LEDPattern pattern;
 
-    private final double animationDT = 0.1;
+    private final double animationDT = 0.005;
 
     public DevilAddressableLED(int port, int length) {
         super(port);
-        updateNotifier = new Notifier(this::update);
+        updateNotifier = new Notifier(() -> {
+            update(false);
+        });
         buffer = new AddressableLEDBuffer(length);
         setLength(length);
         setData(buffer);
         start();
-        setPattern(buffer -> {});
+        turnOff();
     }
 
     public void setPattern(LEDPattern pattern) {
         updateNotifier.stop();
         this.pattern = pattern;
-        update();
+        update(true);
         if (pattern.isAnimated()) {
             updateNotifier.startPeriodic(animationDT);
         }
     }
 
-    public void update() {
-        pattern.setLEDs(buffer);
+    public void turnOff() {
+        setPattern(new SolidLEDPattern(Color.kBlack));
+    }
+
+    public void update(boolean restart) {
+        pattern.setLEDs(buffer, restart);
         setData(buffer);
     }
 }

@@ -74,6 +74,7 @@ public class Arm extends SubsystemBase {
 
         controller.setTolerance(4);
         setGoal(ArmPosition.SCORE);
+        controller.reset(quadEncoder.getDistance());
         enableClosedLoop();
 
         initTelemetry();
@@ -200,6 +201,13 @@ public class Arm extends SubsystemBase {
         return ((armStartingAngleDegrees - armLowAngleDegrees) * tLinkage) + armLowAngleDegrees;
     }
 
+    public ArmPosition getGoal() {
+        var goal = controller.getGoal();
+        if (goal.position == ArmPosition.INTAKE.position) return ArmPosition.INTAKE;
+        if (goal.position == ArmPosition.SCORE.position) return ArmPosition.SCORE;
+        return null;
+    }
+
     @Override
     public void periodic() {
 
@@ -257,14 +265,14 @@ public class Arm extends SubsystemBase {
         armDataTable.getEntry("SetpointPosition").setDouble(controller.getSetpoint().position);
         armDataTable.getEntry("SetpointVelocity").setDouble(controller.getSetpoint().velocity);
 
-        controller.setP(armDataTable.getEntry("kP").getDouble(KP));
-        controller.setI(armDataTable.getEntry("kI").getDouble(KI));
-        controller.setD(armDataTable.getEntry("kD").getDouble(KD));
+        // controller.setP(armDataTable.getEntry("kP").getDouble(KP));
+        // controller.setI(armDataTable.getEntry("kI").getDouble(KI));
+        // controller.setD(armDataTable.getEntry("kD").getDouble(KD));
 
-        var maxAccel = armDataTable.getEntry("MaxAcceleration").getDouble(MAX_ACCEL);
-        var maxVelocity = armDataTable.getEntry("MaxVelocity").getDouble(MAX_VELOCITY);
+        // var maxAccel = armDataTable.getEntry("MaxAcceleration").getDouble(MAX_ACCEL);
+        // var maxVelocity = armDataTable.getEntry("MaxVelocity").getDouble(MAX_VELOCITY);
 
-        controller.setConstraints(new TrapezoidProfile.Constraints(maxVelocity, maxAccel));
+        // controller.setConstraints(new TrapezoidProfile.Constraints(maxVelocity, maxAccel));
     }
 
     public enum ArmPosition {

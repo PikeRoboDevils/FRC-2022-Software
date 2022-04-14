@@ -7,6 +7,7 @@ import static org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax.check;
 import com.revrobotics.*;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
 
@@ -68,6 +69,8 @@ public class Climber extends SubsystemBase {
         boolean ok = true;
         ok &= initCommon(controller);
         controller.setInverted(true);
+        Timer.delay(0.25);
+        ok &= controller.getInverted();
         ok &= check(controller.burnFlash());
         return ok;
     }

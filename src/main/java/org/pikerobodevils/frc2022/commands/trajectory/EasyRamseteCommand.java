@@ -4,6 +4,7 @@ package org.pikerobodevils.frc2022.commands.trajectory;
 import static org.pikerobodevils.frc2022.Constants.DrivetrainConstants.*;
 
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import org.pikerobodevils.frc2022.DriverDashboard;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
@@ -32,6 +33,10 @@ public class EasyRamseteCommand extends RamseteCommand {
         // each subsystem used by the command must be passed into the
         // addRequirements() method (which takes a vararg of Subsystem)
         addRequirements(this.drivetrain);
+    }
+
+    public Command disableWhenFinished() {
+        return this.andThen(drivetrain::disable);
     }
 
     @Override

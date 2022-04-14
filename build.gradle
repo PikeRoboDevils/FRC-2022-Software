@@ -89,6 +89,10 @@ dependencies {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
+clean.doFirst {
+    delete "src/main/deploy/Paths"
+}
+
 ext.getHash = {
     def p1 = 'git rev-parse HEAD'.execute()
     p1.waitFor()
@@ -123,13 +127,16 @@ wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
 
 tasks.register("copyPaths") {
+    outputs.upToDateWhen { false }
     copy {
         from "PathWeaver"
         into "src/main/deploy"
         include "Paths/**"
     }
+
 }
 deploy.targets.roborio.artifacts.frcStaticFileDeploy.dependsOn(copyPaths)
+simulateJava.dependsOn(copyPaths)
 
 
 spotless {

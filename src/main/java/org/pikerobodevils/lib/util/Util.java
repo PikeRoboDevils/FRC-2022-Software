@@ -1,6 +1,8 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.lib.util;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.util.Color;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
@@ -34,5 +36,13 @@ public class Util {
             return new Attributes();
         }
         return manifest.getMainAttributes();
+    }
+
+    public static Color interpolateColor(Color one, Color two, double t) {
+
+        var r = MathUtil.interpolate(one.red, two.red, t);
+        var g = MathUtil.interpolate(one.green, two.green, t);
+        var b = MathUtil.interpolate(one.blue, two.blue, t);
+        return new Color(r, g, b);
     }
 }

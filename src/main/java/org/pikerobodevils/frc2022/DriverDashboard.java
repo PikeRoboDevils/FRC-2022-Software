@@ -14,7 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.pikerobodevils.frc2022.commands.autonomous.*;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
+import org.pikerobodevils.frc2022.trajectory.Trajectories;
 import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
+import org.pikerobodevils.lib.motorcontrol.DevilTalonSRX;
 
 public class DriverDashboard {
 
@@ -36,9 +38,12 @@ public class DriverDashboard {
                 .withWidget(BuiltInWidgets.kField)
                 .withSize(3, 2)
                 .withPosition(6, 0);
-        dashTab.addBoolean("Initialization Successful?", () -> !DevilCANSparkMax.hasFailedInitialization())
+        dashTab.addBoolean(
+                        "Initialization Successful?",
+                        () -> !DevilCANSparkMax.hasFailedInitialization() && !DevilTalonSRX.hasFailedInitialization())
                 .withPosition(3, 0)
                 .withSize(2, 1);
+        dashTab.addBoolean("Trajectories Successful?", Trajectories::isTrajectoriesSuccessful);
         pathEntry = dashTab.add("PathToRun", "").getEntry();
         SmartDashboard.putData(fieldVis);
 
@@ -59,10 +64,10 @@ public class DriverDashboard {
         autoChooser.addOption("Universal Drive Back", new UniversalDriveBackAutonomous());
         autoChooser.addOption("twoball pls dont use yet", new LeftStartTwoBall());
         autoChooser.addOption("Run Path", new RunPathCommand(() -> pathEntry.getString("")));
-        autoChooser.addOption("Right Tarmac dont use", new RightTarmacLeftTwoBall());
-        autoChooser.addOption("Right Tarmac Three dont use", new RightTarmacRightThreeBall());
-
-
+        autoChooser.addOption("Right Tarmac 2 Ball", new RightTarmacLeftTwoBall());
+        autoChooser.addOption("Right Tarmac 3 Ball", new RightTarmacThreeBall());
+        autoChooser.addOption("Right Tarmac Right 2 Ball", new RightTarmacRightTwoBall());
+        autoChooser.addOption("Right Tarmac Right 3 Ball", new RightTarmacRightThreeBall());
     }
 
     public Command getSelectedAutoCommand() {

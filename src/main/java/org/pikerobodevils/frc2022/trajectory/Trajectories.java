@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.pikerobodevils.frc2022.Constants;
 
@@ -43,6 +42,8 @@ public class Trajectories {
             .setKinematics(DrivetrainConstants.KINEMATICS)
             .addConstraint(voltageConstraint)
             .addConstraint(kinematicsConstraint);
+
+    private static boolean trajectoriesSuccessful = true;
 
     public static Trajectory generateTrajectory(
             Pose2d start,
@@ -71,8 +72,9 @@ public class Trajectories {
             var filepath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("Paths", name));
             return fromWaypoints(filepath, conf);
         } catch (IOException exception) {
+            trajectoriesSuccessful = false;
             DriverStation.reportError("Failed to load auto trajectory: " + name, false);
-            return new Trajectory(Arrays.asList(new Trajectory.State()));
+            return emptyTrajectory();
         }
     }
 
@@ -81,6 +83,7 @@ public class Trajectories {
             var filepath = Filesystem.getDeployDirectory().toPath().resolve(Paths.get("Paths", name));
             return quinticFromWaypoints(filepath, conf);
         } catch (IOException exception) {
+            trajectoriesSuccessful = false;
             DriverStation.reportError("Failed to load auto trajectory: " + name, false);
             return new Trajectory();
         }
@@ -109,7 +112,16 @@ public class Trajectories {
 
             end = createPoseWaypoint(lastline);
             DataLogManager.log("Generating trajectory from file: " + path.getFileName());
-            return TrajectoryGenerator.generateTrajectory(start, interiorWaypoints, end, config);
+            Trajectory trajectory;
+            try {
+                trajectory = TrajectoryGenerator.generateTrajectory(start, interiorWaypoints, end, config);
+            } catch (TrajectoryParameterizer.TrajectoryGenerationException e) {
+                trajectoriesSuccessful = false;
+                DriverStation.reportError(
+                        "Could not parameterize trajectory from file: " + path.getFileName(), e.getStackTrace());
+                trajectory = emptyTrajectory();
+            }
+            return trajectory;
         }
     }
 
@@ -136,7 +148,17 @@ public class Trajectories {
 
             interiorWaypoints.add(createPoseWaypoint(lastline));
 
-            return TrajectoryGenerator.generateTrajectory(interiorWaypoints, config);
+            DataLogManager.log("Generating trajectory from file: " + path.getFileName());
+            Trajectory trajectory;
+            try {
+                trajectory = TrajectoryGenerator.generateTrajectory(interiorWaypoints, config);
+            } catch (TrajectoryParameterizer.TrajectoryGenerationException e) {
+                trajectoriesSuccessful = false;
+                DriverStation.reportError(
+                        "Could not parameterize trajectory from file: " + path.getFileName(), e.getStackTrace());
+                trajectory = emptyTrajectory();
+            }
+            return trajectory;
         }
     }
 
@@ -153,5 +175,13 @@ public class Trajectories {
     private static Translation2d createTranslationWaypoint(String input) {
         String[] arrOfStr = input.split(",", 0);
         return new Translation2d(Double.parseDouble(arrOfStr[0]), 8.21 + Double.parseDouble(arrOfStr[1]));
+    }
+
+    public static Trajectory emptyTrajectory() {
+        return new Trajectory(List.of(new Trajectory.State()));
+    }
+
+    public static boolean isTrajectoriesSuccessful() {
+        return trajectoriesSuccessful;
     }
 }

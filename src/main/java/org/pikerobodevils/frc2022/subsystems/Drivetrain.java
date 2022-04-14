@@ -57,9 +57,9 @@ public class Drivetrain extends SubsystemBase {
             Set.of(leftLeader, leftFollowerOne, leftFollowerTwo, rightLeader, rightFollowerOne, rightFollowerTwo);
 
     private final Encoder leftEncoder =
-            new Encoder(LEFT_ENCODER_A, LEFT_ENCODER_B, false, CounterBase.EncodingType.k4X);
+            new Encoder(LEFT_ENCODER_A, LEFT_ENCODER_B, false, CounterBase.EncodingType.k1X);
     private final Encoder rightEncoder =
-            new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k4X);
+            new Encoder(RIGHT_ENCODER_A, RIGHT_ENCODER_B, true, CounterBase.EncodingType.k1X);
 
     private final AHRS navX = new AHRS(SPI.Port.kMXP, (byte) 150);
 
@@ -113,6 +113,8 @@ public class Drivetrain extends SubsystemBase {
 
         configCANFrames();
 
+        leftEncoder.setSamplesToAverage(3);
+        rightEncoder.setSamplesToAverage(3);
         leftEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
         rightEncoder.setDistancePerPulse(DISTANCE_PER_PULSE_METERS);
 

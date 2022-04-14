@@ -3,12 +3,16 @@ package org.pikerobodevils.frc2022;
 
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
 import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.subsystems.MemeMachine;
+import org.pikerobodevils.frc2022.trajectory.Trajectories;
+import org.pikerobodevils.lib.led.patterns.FlashingPattern;
+import org.pikerobodevils.lib.motorcontrol.DevilCANSparkMax;
+import org.pikerobodevils.lib.motorcontrol.DevilTalonSRX;
 import org.pikerobodevils.lib.util.Util;
 
 /**
@@ -38,6 +42,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotInit() {
+        Threads.setCurrentThreadPriority(true, 50);
         setNetworkTablesFlushEnabled(true);
 
         if (isReal()) {
@@ -73,8 +78,15 @@ public class Robot extends TimedRobot {
 
         MemeMachine.initializeMemes();
 
-        // DevilAddressableLED led = new DevilAddressableLED(4, 15);
-        // led.setPattern(new ScannerPattern(Color.kBlue, Color.kRed, 3));
+        if (DevilCANSparkMax.hasFailedInitialization()
+                || DevilTalonSRX.hasFailedInitialization()
+                || !Trajectories.isTrajectoriesSuccessful()) {
+            LEDs.getInstance().setPattern(new FlashingPattern(Color.kRed));
+        } else {
+            LEDs.getInstance().setPattern(new FlashingPattern(Color.kGreen));
+            Timer.delay(3);
+            LEDs.getInstance().turnOff();
+        }
     }
 
     @Override
@@ -88,7 +100,9 @@ public class Robot extends TimedRobot {
         Command ramsete, autonomous;
 
         autoCommand = dashboard.getSelectedAutoCommand();
-        autoCommand.schedule();
+        autoCommand
+                .beforeStarting(() -> drivetrain.setIdleMode(CANSparkMax.IdleMode.kBrake), drivetrain)
+                .schedule();
     }
 
     @Override
@@ -116,7 +130,8 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {
-        LiveWindow.updateValues();
-    }
+    public void testPeriodic() {}
+
+    @Override
+    public void simulationPeriodic() {}
 }

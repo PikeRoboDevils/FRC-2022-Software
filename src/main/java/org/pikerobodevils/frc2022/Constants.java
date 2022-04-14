@@ -12,7 +12,7 @@ import org.pikerobodevils.frc2022.trajectory.Trajectories;
 
 public class Constants {
 
-    public static final double PERIOD = RobotBase.isSimulation() ? 0.02 : 0.01;
+    public static final double PERIOD = RobotBase.isSimulation() ? 0.02 : 0.015;
 
     public static class ControlConstants {
         public static final double AUTO_CLIMB_PITCH_THRESHOLD = 5; // degrees
@@ -41,11 +41,11 @@ public class Constants {
 
         public static final double TRACK_WIDTH_METERS = 0.61059; // Units.inchesToMeters(TRACK_WIDTH_INCHES);
 
-        public static final double KS = 0.20779; // Volts
-        public static final double KV = 1.7472; // V*S/M
-        public static final double KA = 1.1591; // V*S/M^2
+        public static final double KS = 0.13099; // Volts
+        public static final double KV = 1.9012; // V*S/M
+        public static final double KA = 0; // 0.75401; // V*S/M^2
 
-        public static final double KP_VELOCITY = 1;
+        public static final double KP_VELOCITY = 2;
 
         public static final DifferentialDriveKinematics KINEMATICS =
                 new DifferentialDriveKinematics(TRACK_WIDTH_METERS);
@@ -103,14 +103,14 @@ public class Constants {
     }
 
     public static class TrajectoryConstants {
-        public static final double MAX_VELOCITY_MPS = 3;
-        public static final double MAX_ACCEL_MPS = 1;
-        public static final double MAX_VOLTAGE = 5;
+        public static final double MAX_VELOCITY_MPS = 4;
+        public static final double MAX_ACCEL_MPS = 4;
+        public static final double MAX_VOLTAGE = 8;
 
         public static final TrajectoryConfig DEFAULT_CONF_FORWARD = new TrajectoryConfig(
                         MAX_VELOCITY_MPS, MAX_ACCEL_MPS)
                 .setKinematics(DrivetrainConstants.KINEMATICS)
-                .addConstraint(new CentripetalAccelerationConstraint(1))
+                .addConstraint(new CentripetalAccelerationConstraint(2))
                 .addConstraint(new DifferentialDriveVoltageConstraint(
                         DrivetrainConstants.FEEDFORWARD, DrivetrainConstants.KINEMATICS, MAX_VOLTAGE));
         public static final TrajectoryConfig DEFAULT_CONF_REVERSE =

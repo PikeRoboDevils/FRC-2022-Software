@@ -12,6 +12,8 @@ public class DevilTalonSRX extends WPI_TalonSRX {
 
     public static final int PARAMETER_SET_ATTEMPT_COUNT = 5;
 
+    private static boolean hasFailedInitialization = false;
+
     public DevilTalonSRX(int deviceNumber) {
         super(deviceNumber);
     }
@@ -36,10 +38,15 @@ public class DevilTalonSRX extends WPI_TalonSRX {
             setAttemptNumber++;
 
             if (setAttemptNumber >= PARAMETER_SET_ATTEMPT_COUNT) {
+                hasFailedInitialization = true;
                 DriverStation.reportError(
                         String.format("TalonSRX ID %d: Failed to initialize!!", getDeviceID()), false);
                 break;
             }
         }
+    }
+
+    public static boolean hasFailedInitialization() {
+        return hasFailedInitialization;
     }
 }
