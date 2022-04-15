@@ -78,7 +78,8 @@ public class DriverDashboard {
         autoChooser.addOption("Right Tarmac Left 3 Ball", new RightTarmacLeftThreeBall());
         autoChooser.addOption("Right Tarmac Right 2 Ball", new RightTarmacRightTwoBall());
         autoChooser.addOption("Right Tarmac Right 3 Ball", new RightTarmacRightThreeBall());
-        autoChooser.addOption("Billiards Right HA HA", new BilliardsLeftTarmac());
+        autoChooser.addOption("Billiards Left HA HA", new BilliardsLeftTarmac());
+        autoChooser.addOption("Billiards Left + One ball", new LeftBilliardsPlusOne());
     }
 
     public Command getSelectedAutoCommand() {
