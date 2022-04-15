@@ -49,6 +49,4 @@ public class Util {
     public static Color setColorIntensity(Color original, double intensity) {
         return new Color(original.red * intensity, original.green * intensity, original.blue * intensity);
     }
-
-
 }

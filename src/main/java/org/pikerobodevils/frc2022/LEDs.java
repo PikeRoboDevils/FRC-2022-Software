@@ -28,11 +28,11 @@ public class LEDs extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(DriverStation.isEnabled()) {
+        if (DriverStation.isEnabled()) {
             var color = Color.kGreen;
-            if(DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)) {
+            if (DriverStation.getAlliance().equals(DriverStation.Alliance.Blue)) {
                 color = Util.setColorIntensity(Color.kBlue, 0.75);
-            } else if(DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
+            } else if (DriverStation.getAlliance().equals(DriverStation.Alliance.Red)) {
                 color = Util.setColorIntensity(Color.kRed, 0.75);
             }
             setColor(color);

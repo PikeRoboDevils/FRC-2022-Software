@@ -1,10 +1,6 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.frc2022.subsystems;
 
-import edu.wpi.first.hal.FRCNetComm;
-import edu.wpi.first.hal.HAL;
-import org.pikerobodevils.frc2022.Constants;
-
 public class MemeMachine {
 
     public static void initializeMemes() {
