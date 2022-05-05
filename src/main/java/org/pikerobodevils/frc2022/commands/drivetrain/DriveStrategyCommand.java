@@ -1,8 +1,9 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
-package org.pikerobodevils.lib.drivestrategy;
+package org.pikerobodevils.frc2022.commands.drivetrain;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
+import org.pikerobodevils.lib.drivestrategy.DriveStrategy;
 
 public class DriveStrategyCommand extends CommandBase {
     private Drivetrain drivetrain = Drivetrain.getInstance();

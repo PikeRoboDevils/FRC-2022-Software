@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
         }
         DriverStation.startDataLog(DataLogManager.getLog());
 
-        if (isSimulation() | true) DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
+        if (isSimulation()) DriverStation.silenceJoystickConnectionWarning(true); // Uncomment when testing
 
         DataLogManager.log("Initializing Robot...");
         DataLogManager.log("Build debug info:");
