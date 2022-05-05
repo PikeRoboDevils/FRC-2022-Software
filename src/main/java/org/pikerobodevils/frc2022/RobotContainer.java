@@ -1,7 +1,6 @@
 /* (C) 2022 Pike RoboDevils, FRC Team 1018 */
 package org.pikerobodevils.frc2022;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.*;
 import org.pikerobodevils.frc2022.commands.arm.ArmOpenLoopCommand;
@@ -13,6 +12,7 @@ import org.pikerobodevils.frc2022.subsystems.Climber;
 import org.pikerobodevils.frc2022.subsystems.Drivetrain;
 import org.pikerobodevils.frc2022.subsystems.Intake;
 import org.pikerobodevils.lib.WaitAndReserveCommand;
+import org.pikerobodevils.lib.drivestrategy.ArcadeDriveStrategy;
 
 public class RobotContainer {
 
@@ -27,11 +27,13 @@ public class RobotContainer {
         PIDController controller = new PIDController(0.0025, 0, 0.0025, Constants.PERIOD);
         controller.setIntegratorRange(-0.1, 0.1);
 
-        drivetrainCommand = new GyroCorrectedDriveStrategyCommand(
-                new ShivangDriveStrategy(),
-                () -> (MathUtil.applyDeadband(controls.getRotation(), 0.1) == 0),
-                drivetrain::getYaw,
-                controller);
+        /*drivetrainCommand = new GyroCorrectedDriveStrategyCommand(
+        new ShivangDriveStrategy(),
+        () -> (MathUtil.applyDeadband(controls.getRotation(), 0.1) == 0),
+        drivetrain::getYaw,
+        controller);*/
+        drivetrainCommand = new DriveStrategyCommand(
+                new ArcadeDriveStrategy(() -> controls.getSpeed() / 3, () -> controls.getRotation() / 3));
         drivetrain.setDefaultCommand(drivetrainCommand);
 
         controls.getIntakeInButton().whileHeld(new StartEndCommand(intake::intakeIn, intake::disable, intake));

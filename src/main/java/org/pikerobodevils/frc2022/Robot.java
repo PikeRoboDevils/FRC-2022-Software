@@ -111,8 +111,7 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopInit() {
         if (autoCommand != null) autoCommand.cancel();
-
-        drivetrain.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        drivetrain.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     @Override
